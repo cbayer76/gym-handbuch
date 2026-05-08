@@ -296,6 +296,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 <script>
 const STORE_KEY = 'gym_hb_v3';
 const PASSWORD = '08154711';
+const TARGET_PEOPLE = 5; // Ziel: 5 Personen sollen alle Fragen beantworten → 100%
 let answers = {};
 
 // ── FIREBASE CONFIG ──
@@ -622,7 +623,9 @@ function updateStats(){
     sectionData.push({title:s.id+'. '+s.title, color:s.color||secColors[(s.id-1)%secColors.length], answered:sAnswered, total:s.questions.length});
   });
 
-  const covered = totalQ ? Math.round(coveredQ/totalQ*100) : 0;
+  // Overall progress: totalA answers out of (totalQ * TARGET_PEOPLE) possible answers
+  const maxPossible = totalQ * TARGET_PEOPLE;
+  const covered = maxPossible ? Math.min(Math.round(totalA / maxPossible * 100), 100) : 0;
   const avgPerPerson = people.size ? Math.round(totalA/people.size) : 0;
 
   // KPI cards
@@ -637,7 +640,7 @@ function updateStats(){
   SECTIONS.forEach(s=>{ let all=true; s.questions.forEach((_,i)=>{ if(getAnswers(s.id,i).length===0) all=false; }); if(all&&s.questions.length>0) completeSectionsCnt++; });
   const elSD = document.getElementById('st-sections-done');
   if(elSD) elSD.textContent = completeSectionsCnt+' vollständig abgedeckt';
-  document.getElementById('st-covered-sub').textContent = coveredQ+' von '+totalQ+' Fragen';
+  document.getElementById('st-covered-sub').textContent = totalA+' von '+maxPossible+' möglichen Antworten';
   document.getElementById('st-unanswered').textContent = totalQ-coveredQ;
   // st-avg replaced by st-answers-sub
 
@@ -649,22 +652,38 @@ function updateStats(){
   if(elTP) elTP.textContent = topName==='—'?'—':topName.split(' ')[0];
   if(elTPC) elTPC.textContent = topCount>0?topCount+' Antworten eingegeben':'keine Daten';
 
-  // Section progress bars
+  // Section progress bars — person-based: % of TARGET_PEOPLE who answered ALL questions in section
   const barsEl = document.getElementById('section-bars');
-  barsEl.innerHTML = sectionData.map(s=>{
-    const pct = s.total ? Math.round(s.answered/s.total*100) : 0;
-    return `<div class="sbar-row">
-      <div class="sbar-label" title="${s.title}">${s.title}</div>
-      <div class="sbar-track"><div class="sbar-fill" style="width:${pct}%;background:${s.color}"></div></div>
-      <div class="sbar-pct">${pct}%</div>
-    </div>`;
-  }).join('');
+  const secColors2=['#e8232a','#2563eb','#16a34a','#d97706','#7c3aed','#0891b2','#db2777','#65a30d','#ea580c','#0284c7','#9333ea','#b45309','#dc2626','#1d4ed8','#15803d','#c2410c','#6d28d9','#0e7490'];
+
+  const barData = SECTIONS.map((s, idx)=>{
+    // For each person (of all known people), check if they answered ALL questions in this section
+    let personsDone = 0;
+    people.forEach((_, name)=>{
+      const allDone = s.questions.every((_,i)=> getAnswers(s.id,i).some(a=>(a.name||'').trim()===name));
+      if(allDone && s.questions.length > 0) personsDone++;
+    });
+    // pct = persons who completed section / TARGET_PEOPLE
+    const pct = Math.min(Math.round(personsDone / TARGET_PEOPLE * 100), 100);
+    const color = s.color || secColors2[idx % secColors2.length];
+    return {title: s.id+'. '+s.title, pct, personsDone, color};
+  });
+
+  // Sort by pct descending
+  barData.sort((a,b) => b.pct - a.pct);
+
+  barsEl.innerHTML = barData.map(bd=>`
+    <div class="sbar-row">
+      <div class="sbar-label" title="${bd.title}">${bd.title}</div>
+      <div class="sbar-track"><div class="sbar-fill" style="width:${bd.pct}%;background:${bd.color}"></div></div>
+      <div class="sbar-pct" style="color:${bd.pct===100?'var(--green)':bd.pct===0?'var(--muted)':'var(--text)'}">${bd.personsDone}/${TARGET_PEOPLE}</div>
+    </div>`).join('');
 
   // Person table (sorted by answer count desc)
   const sortedPeople = Array.from(people.entries()).sort((a,b)=>b[1].count-a[1].count);
   const tbody = document.getElementById('person-tbody');
   tbody.innerHTML = sortedPeople.map(([name,info],idx)=>{
-    const pct = totalQ ? Math.round(info.count/totalQ*100) : 0;
+    const pct = maxPossible ? Math.min(Math.round(info.count/totalQ*100), 100) : 0; // % of all questions this person answered
     const medal = idx===0?'🥇':idx===1?'🥈':idx===2?'🥉':'';
     return `<tr>
       <td><strong>${medal} ${name}</strong></td>
