@@ -139,6 +139,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
     <div class="topbar-logo">THE GYM</div>
     <span class="topbar-sep">|</span>
     <div class="topbar-title">Handbuch-Fragebogen</div>
+    <span id="sync-status" style="font-size:11px;font-weight:700;color:var(--green);padding:3px 8px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:6px;">✓ Bereit</span>
   </div>
   <div class="topbar-right">
     <div class="user-chip" onclick="changeName()" title="Namen ändern">
@@ -320,9 +321,91 @@ const SECTIONS = [
 ]},
 ];
 
-// ── STORAGE ──
-function loadAnswers(){ try{ answers=JSON.parse(localStorage.getItem(STORE_KEY)||'{}'); }catch(e){ answers={}; } }
-function saveAnswers(){ localStorage.setItem(STORE_KEY, JSON.stringify(answers)); }
+// ── FIREBASE CONFIG ──
+const FB_URL = 'https://gym-handbuch-default-rtdb.europe-west1.firebasedatabase.app';
+
+let syncStatus = 'idle';
+
+function setSyncStatus(s, msg='') {
+  syncStatus = s;
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  const map = {
+    idle:  { icon:'✓', text:' Gespeichert',  color:'var(--green)', bg:'var(--green-bg)',  border:'var(--green-border)' },
+    saving:{ icon:'⟳', text:' Speichert…',   color:'var(--gold)',  bg:'#fffbeb',           border:'#fcd34d' },
+    error: { icon:'⚠', text:' Sync-Fehler',  color:'var(--red)',   bg:'var(--red-bg)',     border:'var(--red-border)' },
+  };
+  const m = map[s] || map.idle;
+  el.textContent = m.icon + (msg || m.text);
+  el.style.color = m.color;
+  el.style.background = m.bg;
+  el.style.borderColor = m.border;
+}
+
+// Deep merge: arrays merged by person name, later entry wins
+function deepMerge(base, override) {
+  const result = JSON.parse(JSON.stringify(base || {}));
+  Object.keys(override || {}).forEach(sKey => {
+    if (!result[sKey]) result[sKey] = {};
+    Object.keys(override[sKey] || {}).forEach(qKey => {
+      const baseArr = Array.isArray(result[sKey][qKey]) ? result[sKey][qKey] : [];
+      const overArr = Array.isArray(override[sKey][qKey]) ? override[sKey][qKey] : [];
+      const map = new Map();
+      baseArr.forEach(a => map.set((a.name||'').trim().toLowerCase(), a));
+      overArr.forEach(a => map.set((a.name||'').trim().toLowerCase(), a));
+      result[sKey][qKey] = Array.from(map.values());
+    });
+  });
+  return result;
+}
+
+// Load from Firebase, fallback to localStorage
+async function loadAnswers() {
+  try { answers = JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch(e) { answers = {}; }
+  try {
+    const resp = await fetch(`${FB_URL}/answers.json`);
+    if (resp.ok) {
+      const cloud = await resp.json();
+      if (cloud && typeof cloud === 'object') {
+        answers = deepMerge(answers, cloud);
+        localStorage.setItem(STORE_KEY, JSON.stringify(answers));
+      }
+    }
+  } catch(e) { console.warn('Firebase load failed, using localStorage:', e); }
+}
+
+// Save: fetch cloud first, merge, then write back
+async function saveAnswers() {
+  localStorage.setItem(STORE_KEY, JSON.stringify(answers));
+  setSyncStatus('saving');
+  try {
+    // 1. Get current cloud state
+    let cloudData = {};
+    const getResp = await fetch(`${FB_URL}/answers.json`);
+    if (getResp.ok) {
+      const d = await getResp.json();
+      if (d && typeof d === 'object') cloudData = d;
+    }
+    // 2. Merge cloud + local (local wins for current user)
+    const merged = deepMerge(cloudData, answers);
+    // 3. Write merged back
+    const putResp = await fetch(`${FB_URL}/answers.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(merged)
+    });
+    if (putResp.ok) {
+      answers = merged;
+      localStorage.setItem(STORE_KEY, JSON.stringify(answers));
+      setSyncStatus('idle');
+    } else {
+      setSyncStatus('error', ' ' + putResp.status);
+    }
+  } catch(e) {
+    setSyncStatus('error', ' Offline');
+    console.warn('Firebase save failed:', e);
+  }
+}
 
 function getMyAnswer(sId, qIdx){
   if(!answers[sId]||!Object.prototype.hasOwnProperty.call(answers[sId],qIdx)) return {name:'',text:''};
@@ -479,20 +562,28 @@ function toggleSection(id){ document.getElementById(`section-${id}`).classList.t
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 let saveTimer=null,toastTimer=null;
-function scheduleSave(){ clearTimeout(saveTimer); saveTimer=setTimeout(()=>{ saveAnswers(); showToast(); },700); }
+function scheduleSave(){
+  setSyncStatus('saving');
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(async ()=>{ await saveAnswers(); showToast(); },700);
+}
 function showToast(){ const t=document.getElementById('toast'); t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2000); }
 
 // ── INIT ──
-const savedName = localStorage.getItem(NAME_KEY);
-if(savedName){
-  currentName=savedName;
-  document.getElementById('nameModal').style.display='none';
-  document.getElementById('topbar-name').textContent=currentName;
-  buildAll();
-  document.getElementById('section-1').classList.add('open');
-} else {
-  setTimeout(()=>document.getElementById('nameInput').focus(),100);
+async function init() {
+  await loadAnswers();
+  const savedName = localStorage.getItem(NAME_KEY);
+  if(savedName){
+    currentName=savedName;
+    document.getElementById('nameModal').style.display='none';
+    document.getElementById('topbar-name').textContent=currentName;
+    buildAll();
+    document.getElementById('section-1').classList.add('open');
+  } else {
+    setTimeout(()=>document.getElementById('nameInput').focus(),100);
+  }
 }
+init();
 </script>
 </body>
 </html>

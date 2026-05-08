@@ -141,6 +141,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
     <span class="admin-badge">🔒 Admin</span>
   </div>
   <div class="topbar-right">
+    <span id="last-refresh" style="font-size:11px;color:var(--muted)"></span>
+    <button class="btn btn-ghost" onclick="refreshAdmin()" style="font-size:13px">↺ Aktualisieren</button>
     <a href="." class="btn btn-ghost">← Zur Eingabe</a>
     <button class="btn btn-export" onclick="openExport()">⬇ Export</button>
     <button class="btn btn-ghost" onclick="openDebug()" style="font-size:12px">🔍 Debug</button>
@@ -194,6 +196,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 const STORE_KEY = 'gym_hb_v3';
 const PASSWORD = '08154711';
 let answers = {};
+
+// ── FIREBASE CONFIG ──
+const FB_URL = 'https://gym-handbuch-default-rtdb.europe-west1.firebasedatabase.app';
 
 // ── SECTIONS ──
 const SECTIONS = [
@@ -358,8 +363,32 @@ function clearError(){ document.getElementById('errorMsg').textContent=''; }
 document.getElementById('pwInput').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
 
 // ── ADMIN INIT ──
-function initAdmin(){
-  try{ answers=JSON.parse(localStorage.getItem(STORE_KEY)||'{}'); }catch(e){ answers={}; }
+async function initAdmin(){
+  document.getElementById('main-content').innerHTML =
+    '<div style="text-align:center;padding:60px;color:var(--muted);font-size:15px">⟳ Lade Antworten aus Firebase…</div>';
+
+  try {
+    const resp = await fetch(`${FB_URL}/answers.json`);
+    if (resp.ok) {
+      const cloud = await resp.json();
+      if (cloud && typeof cloud === 'object') {
+        answers = cloud;
+        const el = document.getElementById('last-refresh');
+        if(el) el.textContent = 'Aktualisiert: ' + new Date().toLocaleTimeString('de-DE');
+      } else {
+        answers = {};
+      }
+    } else {
+      throw new Error('HTTP ' + resp.status);
+    }
+  } catch(e) {
+    console.warn('Firebase load failed, falling back to localStorage:', e);
+    try{ answers=JSON.parse(localStorage.getItem(STORE_KEY)||'{}'); }catch(ex){ answers={}; }
+    const el = document.getElementById('last-refresh');
+    if(el){ el.textContent = '⚠ Offline — lokale Daten'; el.style.color='var(--red)'; }
+  }
+
+  document.getElementById('main-content').innerHTML = '';
   buildNav();
   buildSections();
   updateStats();
@@ -485,6 +514,14 @@ function downloadExport(){
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Gym_Admin_Antworten.txt'; a.click();
 }
 document.getElementById('modal').addEventListener('click',function(e){ if(e.target===this) closeExport(); });
+
+function refreshAdmin(){
+  const btn = document.querySelector('[onclick="refreshAdmin()"]');
+  if(btn){ btn.textContent='⟳ Lädt…'; btn.disabled=true; }
+  initAdmin().then(()=>{
+    if(btn){ btn.textContent='↺ Aktualisieren'; btn.disabled=false; }
+  });
+}
 
 function openDebug(){
   const raw = localStorage.getItem(STORE_KEY);
