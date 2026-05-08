@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin · Alle Antworten · THE GYM</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+:root{--bg:#ffffff;--surface:#f8f9fa;--surface2:#f0f2f5;--surface3:#e8ebef;--border:#d0d5dd;--accent:#e8232a;--accent2:#d97706;--text:#111827;--muted:#4b5563;--green:#16a34a;--green-bg:#f0fdf4;--blue:#2563eb;--radius:10px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:16px;}
+
+/* LOGIN */
+.login-overlay{position:fixed;inset:0;z-index:999;background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);display:flex;align-items:center;justify-content:center;}
+.login-box{background:#fff;border-radius:20px;padding:40px 36px;max-width:400px;width:90%;box-shadow:0 32px 80px rgba(0,0,0,0.4);text-align:center;}
+.login-logo{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--accent);letter-spacing:2px;margin-bottom:4px;}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:28px;}
+.lock-icon{font-size:40px;margin-bottom:16px;}
+.login-box h2{font-size:20px;font-weight:700;margin-bottom:6px;}
+.login-box p{font-size:14px;color:var(--muted);margin-bottom:22px;}
+.login-box input{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:10px;font-size:18px;font-family:'DM Mono',monospace;outline:none;transition:border-color 0.2s;text-align:center;letter-spacing:4px;}
+.login-box input:focus{border-color:var(--accent);}
+.login-box input.error{border-color:#ef4444;animation:shake 0.4s ease;}
+.login-box button{width:100%;margin-top:14px;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.15s;}
+.login-box button:hover{background:#c01920;}
+.error-msg{color:#ef4444;font-size:13px;margin-top:8px;min-height:18px;}
+.back-link{display:block;margin-top:16px;font-size:13px;color:var(--muted);text-decoration:none;}
+.back-link:hover{color:var(--text);}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+/* TOP BAR */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.97);backdrop-filter:blur(12px);border-bottom:2px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 1px 8px rgba(0,0,0,0.06);}
+.topbar-left{display:flex;align-items:center;gap:14px;flex-shrink:0;}
+.topbar-logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--accent);}
+.topbar-sep{color:#b0b8c4;font-size:20px;}
+.topbar-title{font-size:14px;color:var(--muted);font-weight:500;}
+.admin-badge{background:#1e293b;color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;}
+.topbar-right{display:flex;gap:10px;align-items:center;}
+.btn{padding:9px 18px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.15s;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+.btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
+.btn-ghost:hover{background:var(--surface3);}
+.btn-export{background:var(--accent2);color:#fff;}
+.btn-export:hover{background:#b45309;}
+
+/* STATS BAR */
+.stats-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;gap:32px;flex-wrap:wrap;}
+.stat{display:flex;flex-direction:column;gap:2px;}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;}
+.stat-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;}
+
+/* NAV */
+.nav-pills{position:sticky;top:57px;z-index:90;background:#fff;border-bottom:1px solid var(--border);padding:0 24px;display:flex;overflow-x:auto;scrollbar-width:none;}
+.nav-pills::-webkit-scrollbar{display:none;}
+.nav-pill{padding:12px 14px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all 0.15s;display:flex;align-items:center;gap:6px;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif;}
+.nav-pill:hover{color:var(--text);}
+.pill-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+
+/* MAIN */
+.main{max-width:1000px;margin:0 auto;padding:20px 24px 80px;}
+
+/* SECTION */
+.section{margin-bottom:10px;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+.section-header{display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;user-select:none;background:#fff;transition:background 0.15s;}
+.section-header:hover{background:var(--surface);}
+.section-color-bar{width:5px;height:36px;border-radius:3px;flex-shrink:0;}
+.section-title{font-size:17px;font-weight:700;flex:1;}
+.section-meta{font-size:13px;color:var(--muted);margin-left:auto;margin-right:12px;}
+.section-chevron{color:var(--muted);font-size:18px;transition:transform 0.2s;}
+.section.open .section-chevron{transform:rotate(180deg);}
+.section-body{display:none;background:#fff;}
+.section.open .section-body{display:block;}
+
+/* PREFILLED */
+.prefilled-banner{margin:14px 20px 0;padding:12px 16px;background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;display:flex;gap:10px;}
+.prefilled-label{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent2);margin-bottom:3px;}
+.prefilled-text{font-size:13px;color:#92400e;line-height:1.6;}
+
+/* QUESTION */
+.questions-list{padding:12px 20px 20px;display:flex;flex-direction:column;gap:14px;}
+.q-block{border:1.5px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+.q-block.has-answers{border-color:#86efac;}
+.q-top{padding:14px 16px 10px;background:#fff;}
+.q-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:6px;}
+.q-num{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);min-width:24px;padding-top:2px;font-weight:500;}
+.q-text{font-size:15px;font-weight:700;line-height:1.5;flex:1;}
+.q-count{font-size:12px;padding:3px 10px;background:#dcfce7;color:var(--green);border-radius:6px;font-weight:700;border:1px solid #86efac;white-space:nowrap;}
+.q-hint{font-size:13px;color:var(--muted);padding:0 0 0 34px;line-height:1.5;font-style:italic;}
+.q-no-answer{padding:14px 16px;background:var(--surface);border-top:1px solid var(--border);font-size:13px;color:#9ca3af;font-style:italic;}
+
+/* ANSWERS GRID */
+.answers-grid{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--border);}
+.answer-row{display:flex;align-items:stretch;border-bottom:1px solid #f0f0f0;}
+.answer-row:last-child{border-bottom:none;}
+.answer-person{min-width:140px;max-width:160px;padding:12px 14px;background:var(--surface2);border-right:1px solid var(--border);display:flex;align-items:flex-start;gap:7px;}
+.person-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.person-name{font-size:13px;font-weight:700;color:var(--text);word-break:break-word;line-height:1.4;}
+.answer-text-cell{flex:1;padding:12px 16px;font-size:14px;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal{background:#fff;border:1px solid var(--border);border-radius:16px;padding:28px;max-width:580px;width:92%;max-height:82vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.15);}
+.modal h2{font-family:'Bebas Neue',sans-serif;font-size:28px;margin-bottom:6px;}
+.modal p{font-size:14px;color:var(--muted);margin-bottom:14px;}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap;}
+.export-preview{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);max-height:280px;overflow-y:auto;white-space:pre-wrap;line-height:1.7;}
+
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--surface);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <div class="login-logo">THE GYM</div>
+    <div class="lock-icon">🔒</div>
+    <h2>Admin-Bereich</h2>
+    <p>Alle Antworten aller Mitarbeiter. Bitte Passwort eingeben.</p>
+    <input type="password" id="pwInput" placeholder="••••••••" maxlength="20"
+      oninput="clearError()" onkeydown="if(event.key==='Enter') doLogin()"/>
+    <div class="error-msg" id="errorMsg"></div>
+    <button onclick="doLogin()">Einloggen →</button>
+    <a href="./" class="back-link">← Zurück zur Eingabeseite</a>
+  </div>
+</div>
+
+<!-- TOPBAR (hidden until login) -->
+<div id="app" style="display:none">
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">THE GYM</div>
+    <span class="topbar-sep">|</span>
+    <div class="topbar-title">Alle Antworten</div>
+    <span class="admin-badge">🔒 Admin</span>
+  </div>
+  <div class="topbar-right">
+    <a href="./" class="btn btn-ghost">← Zur Eingabe</a>
+    <button class="btn btn-export" onclick="openExport()">⬇ Export</button>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar" id="stats-bar">
+  <div class="stat"><div class="stat-num" id="st-sections">18</div><div class="stat-lbl">Abschnitte</div></div>
+  <div class="stat"><div class="stat-num" id="st-questions">0</div><div class="stat-lbl">Fragen</div></div>
+  <div class="stat"><div class="stat-num" id="st-answers" style="color:var(--green)">0</div><div class="stat-lbl">Antworten</div></div>
+  <div class="stat"><div class="stat-num" id="st-people" style="color:var(--blue)">0</div><div class="stat-lbl">Personen</div></div>
+  <div class="stat"><div class="stat-num" id="st-covered" style="color:var(--accent2)">0%</div><div class="stat-lbl">Abgedeckt</div></div>
+</div>
+
+<!-- NAV -->
+<div class="nav-pills" id="nav-pills"></div>
+
+<!-- MAIN -->
+<div class="main" id="main-content"></div>
+</div>
+
+<!-- EXPORT MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2>Export</h2>
+    <p>Alle Antworten aller Personen als Textdatei.</p>
+    <div class="export-preview" id="export-preview"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeExport()">Schließen</button>
+      <button class="btn btn-ghost" onclick="copyExport()">📋 Kopieren</button>
+      <button class="btn btn-export" onclick="downloadExport()">⬇ .txt laden</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORE_KEY = 'gym_hb_v3';
+const PASSWORD = '08154711';
+let answers = {};
+
+// ── SECTIONS ──
+const SECTIONS = [
+{id:1,title:"Onboarding & Grundlagen",color:"#e8232a",prefilled:"THE GYM Nürnberg, THE GYM Schwabach und Fight Gym Nürnberg gehören zum selben Unternehmen. Inhaber: Meister Christian. Stellv. Leitung Nürnberg: Tatjana Bektovic.",questions:[
+{q:"In welchem Jahr wurde das erste Studio eröffnet — und was war die ursprüngliche Vision?",hint:"Gründungsjahr, Motivation, erste Idee dahinter."},
+{q:"Welche 3–5 Kernwerte sollen neue Mitarbeiter von Tag 1 an verkörpern?",hint:"z. B. Respekt, Disziplin, Gemeinschaft — in eigenen Worten."},
+{q:"Wie lauten die genauen Adressen & Öffnungszeiten aller drei Standorte?",hint:"Straße, PLZ, Ort, Öffnungszeiten Mo–So je Standort."},
+{q:"Was unterscheidet THE GYM Nürnberg, THE GYM Schwabach und Fight Gym inhaltlich?",hint:"Schwerpunkte, Zielgruppe, Fläche, Besonderheiten."},
+{q:"Wer ist der erste Ansprechpartner für neue Mitarbeiter — mit Telefonnummer?",hint:"Name, Rolle, Handy-Nummer."},
+{q:"Was soll ein neuer Mitarbeiter nach 1 Woche / 1 Monat / 3 Monaten selbstständig können?",hint:"Konkretes Lernziel je Zeitraum."},
+{q:"Was tragen Mitarbeiter an der Theke? Gibt es ein Firmen-Shirt?",hint:"Farbe, Logo, Hose, Schuhe, Schmuck, Haare."},
+{q:"Duzen oder Siezen? Was ist die Begrüßungsformel beim Eintreten eines Mitglieds?",hint:"Genaue Formulierung, die alle Mitarbeiter verwenden sollen."},
+{q:"Was ist absolut verboten im Umgang mit Mitgliedern (mind. 5 Beispiele)?",hint:"z. B. kein Kaugummi, kein Handy sichtbar, kein Diskutieren vor anderen Mitgliedern."},
+{q:"In welchen Situationen dürfen Mitarbeiter KEINE Auskunft geben (DSGVO)?",hint:"z. B. Trainingsplan eines anderen Mitglieds, Umsatzzahlen, Vertragsdetails Dritter."},
+{q:"Wo werden unterschriebene Verträge aufbewahrt — digital, physisch oder beides?",hint:"Ablageort, Zugriff nur für wen?"},
+]},
+{id:2,title:"Arbeitszeiten & Organisation",color:"#22c55e",prefilled:"Nuki Smart Lock im Einsatz. Gesetzliche Pausenpflicht: ab 6h = 30 Min, ab 9h = 45 Min.",questions:[
+{q:"Über welchen Kanal wird der Schichtplan kommuniziert?",hint:"WhatsApp-Gruppe, App, Aushang, Google Sheet."},
+{q:"Was muss bei einer Schichtübergabe zwingend übergeben werden?",hint:"Kassenstand, offene Aufgaben, Technikprobleme, besondere Vorkommnisse."},
+{q:"Welches Tool wird zur Zeiterfassung genutzt — und wie genau funktioniert es?",hint:"App-Name, Schritt für Schritt."},
+{q:"Was passiert, wenn ein Mitarbeiter das Einstempeln vergessen hat?",hint:"Selbst nachtragen? Vorgesetzten informieren? Frist?"},
+{q:"Wann darf die Pause gemacht werden — wer übernimmt die Theke währenddessen?",hint:"Regelung bei Alleinarbeit, Absprache mit Kollegen."},
+{q:"Wen ruft ein Mitarbeiter an, wenn er zu spät kommt oder krank ist — und bis wann?",hint:"Name + Nummer der Kontaktperson."},
+{q:"Wer hat Admin-Zugriff auf die Nuki-App — wie wird ein neuer Mitarbeiter hinzugefügt / entfernt?",hint:"Name des Admins, Prozess."},
+{q:"Was tut ein Mitarbeiter, wenn das Nuki-Schloss nicht reagiert oder der Akku leer ist?",hint:"Schritt für Schritt: Notfallöffnung, wen anrufen."},
+]},
+{id:3,title:"Tagesbericht & Reporting",color:"#3b82f6",prefilled:"",questions:[
+{q:"Welche Felder sind im Tagesbericht Pflicht — bitte vollständige Liste?",hint:"Datum, Schicht, Kassenstand, Probetrainings, Vorfälle, Verkäufe."},
+{q:"Wann und wie wird der Tagesbericht eingereicht — an wen?",hint:"Am Schichtende? Per App / WhatsApp / E-Mail?"},
+{q:"Beschreibe den Kassenbericht / Tagesabschluss Schritt für Schritt.",hint:"Bargeld zählen, abgleichen, dokumentieren."},
+{q:"Was ist ein 'kleines' Problem (selbst lösen) vs. eines, das sofort eskaliert wird?",hint:"Je 2–3 Beispiele."},
+]},
+{id:4,title:"Probetraining",color:"#a855f7",prefilled:"THE GYM und Fight Gym bieten Probetrainings an.",questions:[
+{q:"Wie läuft ein Probetraining ab — von der Anfrage bis zum Abschluss-Gespräch?",hint:"Schritt für Schritt."},
+{q:"Was wird dem Gast beim Empfang gezeigt und erklärt?",hint:"Umkleide, Duschen, Trainingsbereich, Geräte, Regeln."},
+{q:"Was sind die 3–5 stärksten Verkaufsargumente für eine Mitgliedschaft?",hint:"Preis-Leistung, Lage, Kurse, Gemeinschaft."},
+{q:"In welcher Reihenfolge werden die Tarife präsentiert?",hint:"Präsentationsstrategie: Premium → Basis oder umgekehrt?"},
+{q:"Was sagt ein Mitarbeiter, wenn jemand KEIN Mitglied werden möchte?",hint:"Genaue Formulierung — kein Druck, aber Tür offen lassen."},
+{q:"Wie und wann wird nachgefasst — an welchem Tag, per welchem Kanal?",hint:"Tag 1? Tag 3? Telefon oder WhatsApp?"},
+]},
+{id:5,title:"Mitgliedschaften & Verträge",color:"#ec4899",prefilled:"THE GYM bietet Fitness-, Kampfsport- und Kombi-Mitgliedschaften an.",questions:[
+{q:"Bitte alle aktuellen Tarife mit Preis, Laufzeit und Leistungen auflisten.",hint:"Name, monatlicher Preis, Mindestlaufzeit, Leistungen."},
+{q:"Gibt es Sondertarife (Studenten, Schüler, Familien, Firmen)?",hint:"Konditionen und Nachweispflicht."},
+{q:"Welches System wird für den Vertragsabschluss genutzt?",hint:"System-Name, Pflichtfelder."},
+{q:"Was bekommt das neue Mitglied nach dem Abschluss ausgehändigt?",hint:"Vertragsausfertigung, Mitgliedsausweis, Willkommensinfo?"},
+{q:"Wie kündigt ein Mitglied — schriftlich, per App, mündlich? Welche Frist gilt?",hint:"Kündigungsfrist, Form, an wen gerichtet."},
+{q:"Unter welchen Bedingungen kann eine Mitgliedschaft pausiert werden?",hint:"Krankheit, Urlaub, andere Gründe?"},
+{q:"Wann wird der Beitrag eingezogen — was passiert bei einer Rücklastschrift?",hint:"Einzugsdatum, Bearbeitungsgebühr, ab wann Mahnung."},
+{q:"Was tut ein Mitarbeiter, wenn ein Mitglied mit offener Zahlung ins Studio kommt?",hint:"Ansprechen? An wen eskalieren?"},
+{q:"Wie funktioniert das Check-in-System?",hint:"Chip, Karte oder App?"},
+]},
+{id:6,title:"Verkauf & Kasse",color:"#f97316",prefilled:"",questions:[
+{q:"Bitte alle Produkte an der Theke mit aktuellem Preis auflisten.",hint:"Getränke, Riegel, Supplements, Merchandise, Tagestickets."},
+{q:"Welches Kassensystem wird genutzt — wie läuft ein Standardverkauf ab?",hint:"System-Name, Schritt für Schritt."},
+{q:"Was darf ein Mitarbeiter bei Reklamationen eigenständig entscheiden?",hint:"z. B. bis 10 € eigenständig, ab 10 € Rücksprache."},
+{q:"Wie wird eine Kassendifferenz am Tagesende dokumentiert und gemeldet?",hint:"Formular? WhatsApp? Wer wird informiert?"},
+{q:"Wie und wo werden Quittungen und Tagesbelege aufbewahrt?",hint:"Digital, physisch — wie lange?"},
+]},
+{id:7,title:"Software & Tools",color:"#06b6d4",prefilled:"",questions:[
+{q:"Welches Mitgliederverwaltungssystem nutzt ihr — und welche Funktionen braucht der Theken-MA täglich?",hint:"Login, Mitglied suchen, Check-in, Vertrag erstellen."},
+{q:"Welches Zeiterfassungstool wird genutzt?",hint:"App-Name, wer richtet sie ein?"},
+{q:"Über welche Kanäle wird intern kommuniziert?",hint:"WhatsApp: Schicht-Updates. E-Mail: formelle Themen."},
+{q:"Welche Login-Daten bekommt ein neuer Mitarbeiter?",hint:"Mitgliederverwaltung, Kasse, E-Mail, Nuki-App."},
+]},
+{id:8,title:"Elektronik & Technik",color:"#64748b",prefilled:"",questions:[
+{q:"Welches Drucker-Modell ist im Einsatz — wie wird ein Papierstau behoben?",hint:"Modell, Schritt-für-Schritt."},
+{q:"Welches Kaffeemaschinen-Modell ist im Einsatz — wie läuft die tägliche Reinigung ab?",hint:"Modell, Reinigungsmittel, Fehlermeldungen."},
+{q:"Wo steht der WLAN-Router — wie wird er neu gestartet? Gäste-WLAN-Passwort?",hint:"Standort, Restart, Passwort."},
+{q:"Wie funktioniert die Musikanlage / der TV?",hint:"Lautstärkeregelung, Quellenauswahl, erlaubte Inhalte."},
+{q:"Wie funktioniert die Zutrittsanlage / das Drehkreuz bei einem Fehler?",hint:"Manuelle Öffnung, Notfallverfahren."},
+{q:"Wo ist die Brandmeldeanlage — was tut ein Mitarbeiter bei Alarm?",hint:"Standort, Sammelstelle, Ablauf."},
+{q:"Wer ist erster Ansprechpartner bei technischen Problemen — mit Telefonnummer?",hint:"Intern und extern."},
+]},
+{id:9,title:"Regeln an der Theke",color:"#10b981",prefilled:"",questions:[
+{q:"Wie lautet die exakte Begrüßungsformel am Telefon?",hint:"z. B. 'THE GYM Nürnberg, [Vorname], guten Tag.'"},
+{q:"Gibt es E-Mail-Vorlagen für häufige Anfragen?",hint:"Probetraining bestätigen, Kündigung bestätigen, Preisanfrage."},
+{q:"Was sind die genauen Regeln zur Handy-Nutzung während der Arbeitszeit?",hint:"Nur in Pausen? Nur dienstlich?"},
+{q:"Darf an der Theke gegessen oder getrunken werden?",hint:"Eigene Flasche erlaubt? Kein Essen sichtbar?"},
+{q:"Wie wird bei Stoßzeiten mit einer Warteschlange umgegangen?",hint:"Priorisierung, Kommunikation."},
+{q:"Wer haftet bei Kassendifferenzen — wie wird eine Differenz gemeldet?",hint:"Ab welchem Betrag? An wen?"},
+{q:"Was tut ein Mitarbeiter mit Fundsachen oder Wertsachen?",hint:"Aufbewahrungsort, Dokumentation, Rückgabe."},
+]},
+{id:10,title:"Regeln auf der Trainingsfläche",color:"#8b5cf6",prefilled:"Nur Frauen dürfen oben ohne trainieren (Männer nicht). Schuhverbot auf Matten.",questions:[
+{q:"Wie wird die Handtuchpflicht auf der Fitnessfläche kommuniziert und durchgesetzt?",hint:"Hinweisschild? Mündlich ansprechen?"},
+{q:"Wie werden Neumitglieder in die Geräte eingewiesen?",hint:"Wer ist zuständig? Dauer? Protokoll?"},
+{q:"Welche Verhaltensweisen sind auf der Trainingsfläche verboten?",hint:"Fotografieren, Gewichte fallen lassen, lautes Schreien."},
+{q:"Wie wird die 'oben ohne'-Regelung für Männer kommuniziert?",hint:"Direkte Ansprache? Hinweisschild? Wortlaut?"},
+{q:"Welche Hygieneartikel stellt das Studio bereit?",hint:"Desinfektionsmittel, Handtücher — Standort, Nachfüll-Verantwortung."},
+{q:"Wer darf den Kampfsport-/Mattenbereich betreten?",hint:"Nur Kursmitglieder? Mit Tagesticket?"},
+{q:"Was tut ein Mitarbeiter, wenn jemand gegen Hygieneregeln verstößt?",hint:"Erst ansprechen, dann was?"},
+]},
+{id:11,title:"Altersgrenzen & Zulassungen",color:"#f59e0b",prefilled:"",questions:[
+{q:"Ab welchem Alter darf die Fitnessfläche genutzt werden?",hint:"Unter 16 nur mit Elternteil? Ab 16 allein?"},
+{q:"Ab welchem Alter sind die Kampfsportkurse zugänglich — je Disziplin?",hint:"BJJ, MMA, Boxen, Kickboxen."},
+{q:"Was passiert, wenn ein Kind das Elternteil begleitet?",hint:"Regelung, Haftungsausschluss, Formular?"},
+{q:"Wer darf Gastkarten oder Tagestickets erwerben?",hint:"Altersbeschränkung? Nur mit Mitglied?"},
+]},
+{id:12,title:"Kurse & Stundenplan",color:"#0ea5e9",prefilled:"THE GYM und Fight Gym bieten Kampfsport- und Fitness-Kurse an.",questions:[
+{q:"Bitte den aktuellen Stundenplan aller Kurse an allen Standorten eintragen.",hint:"Kursname, Tag, Uhrzeit, Trainer, Standort."},
+{q:"Was tut ein Mitarbeiter, wenn ein Kurs voll ist?",hint:"Warteliste? Nächsten Termin empfehlen?"},
+{q:"Wie wird ein Kurs-Ausfall oder Trainerwechsel kommuniziert?",hint:"Wer entscheidet? Wer informiert? Über welchen Kanal?"},
+{q:"Welche Kurzbeschreibung soll ein Mitarbeiter für jeden Kurs kennen?",hint:"Pro Kurs: Was ist das? Für wen? Vorkenntnisse?"},
+]},
+{id:13,title:"Notfälle & Sicherheit",color:"#dc2626",prefilled:"Notruf Verletzungen: 112. Notruf Polizei: 110.",questions:[
+{q:"Wo befindet sich der Erste-Hilfe-Kasten — wer kontrolliert ihn?",hint:"Standort, Kontrollintervall, Verantwortung."},
+{q:"Wer im Team ist als Ersthelfer ausgebildet?",hint:"Name, Standort, Erreichbarkeit."},
+{q:"Was tut ein Mitarbeiter bei einer leichten Verletzung?",hint:"Selbst versorgen, dokumentieren, wann weiterleiten?"},
+{q:"Ab wann und wie wird der Notruf 112 gerufen?",hint:"Kriterien: Bewusstlosigkeit, Krampfanfall, starke Blutung."},
+{q:"Wie wird ein Unfallbericht ausgefüllt — wo ist das Formular?",hint:"Formular-Standort, Pflichtfelder, Einreichungsfrist."},
+{q:"Welche internen Notfallkontakte gibt es — mit Telefonnummern?",hint:"Management, Techniker, Vermieter."},
+]},
+{id:14,title:"Konflikte & Beschwerden",color:"#6366f1",prefilled:"",questions:[
+{q:"Wie reagiert ein Mitarbeiter, wenn zwei Mitglieder streiten?",hint:"Eingreifen? Trennen? Wann Verstärkung holen?"},
+{q:"Wie geht ein Mitarbeiter mit einer direkten Beschwerde gegen sich selbst um?",hint:"Ruhig bleiben, zuhören, nicht rechtfertigen."},
+{q:"Was ist der Beschwerde-Prozess Schritt für Schritt?",hint:"Zuhören → Verstehen → Lösen → Dokumentieren → Eskalieren."},
+{q:"Wie geht ein Mitarbeiter mit einer aggressiven Person um?",hint:"Deeskalation, Rückzug, wen alarmieren, wann Polizei rufen?"},
+{q:"Wann und wie wird der Vorgesetzte hinzugezogen?",hint:"Bei Androhung von Gewalt? Immer bei Vertragsthemen?"},
+{q:"Wer darf ein Hausverbot aussprechen — wie wird es festgehalten?",hint:"Formular? Foto? Was wird dem Betroffenen mitgeteilt?"},
+]},
+{id:15,title:"Zuständigkeiten & Kontakte",color:"#14b8a6",prefilled:"Inhaber: Meister Christian. Stellv. Leitung Nürnberg: Tatjana Bektovic.",questions:[
+{q:"Bitte die vollständige interne Kontaktliste mit Telefonnummern eintragen.",hint:"Inhaber, Schichtleitung, Tatjana, Techniker, Reinigung."},
+{q:"Bitte die externe Kontaktliste mit Telefonnummern eintragen.",hint:"Vermieter, IT-Support, Getränkelieferant, Notarzt, Polizei."},
+{q:"Wie wird das Management außerhalb der Öffnungszeiten erreicht?",hint:"Notfallnummer? WhatsApp?"},
+]},
+{id:16,title:"Einkauf & Nachbestellung",color:"#d946ef",prefilled:"",questions:[
+{q:"Was darf oder muss ein Theken-Mitarbeiter eigenständig nachbestellen?",hint:"Welche Produkte? Bis zu welchem Betrag?"},
+{q:"Wo und wie wird ein Bedarf gemeldet?",hint:"WhatsApp-Gruppe, Formular, mündlich, App?"},
+{q:"Welche Mindestbestände gelten — was darf nie ausgehen?",hint:"Kaffee, Reinigungsmittel, Druckerpapier, Handtücher."},
+{q:"Welche Lieferanten nutzt ihr — wie und wo wird bestellt?",hint:"Lieferantenname, Kontakt, Bestellweg, Lieferzeit."},
+{q:"Wer gibt Bestellungen frei — ab welchem Betrag?",hint:"z. B. bis 50 € selbst, ab 50 € Rücksprache."},
+]},
+{id:17,title:"Reinigung & Hygiene",color:"#84cc16",prefilled:"",questions:[
+{q:"Was sind die täglichen Reinigungsaufgaben an der Theke und im Eingangsbereich?",hint:"Was genau, wann, womit gereinigt?"},
+{q:"Was reinigt der Mitarbeiter selbst — was macht die externe Reinigungsfirma?",hint:"Klare Grenzziehung."},
+{q:"Welche Hygienestandards müssen eingehalten werden?",hint:"Handschuhe? Desinfektionsmittel?"},
+{q:"Wie funktioniert die Mülltrennung im Studio?",hint:"Welche Tonnen gibt es? Was kommt wohin?"},
+]},
+{id:18,title:"Kommunikation & Social Media",color:"#f43f5e",prefilled:"Offizielle Kanäle: Instagram, Facebook. Website: thegym-nuernberg.de.",questions:[
+{q:"Darf ein Mitarbeiter auf den Studio-Kanälen posten — wenn ja, was und wie?",hint:"Wer gibt Posts frei? Was ist verboten?"},
+{q:"Wer verwaltet die offiziellen Social-Media-Kanäle (Admin)?",hint:"Instagram, Facebook, Google-Profil, Website."},
+{q:"Wie verhält sich ein Mitarbeiter bei einer Presseanfrage?",hint:"Weiterleitungspflicht an Management?"},
+{q:"Was tut ein Mitarbeiter, wenn Behörden oder Kontrolleure das Studio betreten?",hint:"Freundlich empfangen, Management sofort informieren."},
+]},
+];
+
+// ── LOGIN ──
+function doLogin(){
+  const pw = document.getElementById('pwInput').value;
+  if(pw === PASSWORD){
+    document.getElementById('loginOverlay').style.display='none';
+    document.getElementById('app').style.display='block';
+    initAdmin();
+  } else {
+    const inp = document.getElementById('pwInput');
+    inp.classList.add('error');
+    document.getElementById('errorMsg').textContent='Falsches Passwort. Bitte erneut versuchen.';
+    setTimeout(()=>inp.classList.remove('error'),500);
+    inp.value=''; inp.focus();
+  }
+}
+function clearError(){ document.getElementById('errorMsg').textContent=''; }
+document.getElementById('pwInput').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+
+// ── ADMIN INIT ──
+function initAdmin(){
+  try{ answers=JSON.parse(localStorage.getItem(STORE_KEY)||'{}'); }catch(e){ answers={}; }
+  buildNav();
+  buildSections();
+  updateStats();
+}
+
+function getAnswers(sId,qIdx){
+  if(!answers[sId]||!answers[sId][qIdx]) return [];
+  return answers[sId][qIdx].filter(a=>(a.text||'').trim());
+}
+
+function buildNav(){
+  const nav=document.getElementById('nav-pills');
+  SECTIONS.forEach(s=>{
+    const btn=document.createElement('button');
+    btn.className='nav-pill';
+    btn.onclick=()=>document.getElementById(`section-${s.id}`).scrollIntoView({behavior:'smooth',block:'start'});
+    btn.innerHTML=`<div class="pill-dot" style="background:${s.color}"></div>${s.id}. ${s.title}`;
+    nav.appendChild(btn);
+  });
+}
+
+function buildSections(){
+  const main=document.getElementById('main-content');
+  SECTIONS.forEach(s=>{
+    const sec=document.createElement('div');
+    sec.className='section open'; sec.id=`section-${s.id}`;
+    let qHtml='';
+    s.questions.forEach((q,i)=>{
+      const arr=getAnswers(s.id,i);
+      const hasAns=arr.length>0;
+      let answersHtml='';
+      if(hasAns){
+        answersHtml='<div class="answers-grid">';
+        arr.forEach(a=>{
+          answersHtml+=`<div class="answer-row">
+            <div class="answer-person"><span class="person-icon">👤</span><span class="person-name">${esc(a.name||'Unbekannt')}</span></div>
+            <div class="answer-text-cell">${esc(a.text||'')}</div>
+          </div>`;
+        });
+        answersHtml+='</div>';
+      } else {
+        answersHtml='<div class="q-no-answer">— Noch keine Antwort eingegangen —</div>';
+      }
+      qHtml+=`<div class="q-block${hasAns?' has-answers':''}">
+        <div class="q-top">
+          <div class="q-row">
+            <div class="q-num">${String(i+1).padStart(2,'0')}</div>
+            <div class="q-text">${q.q}</div>
+            ${hasAns?`<span class="q-count">✓ ${arr.length} Antwort${arr.length>1?'en':''}</span>`:''}
+          </div>
+          <div class="q-hint">💡 ${q.hint}</div>
+        </div>
+        ${answersHtml}
+      </div>`;
+    });
+    sec.innerHTML=`
+      <div class="section-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="section-color-bar" style="background:${s.color}"></div>
+        <div class="section-title" style="flex:1">${s.id}. ${s.title}</div>
+        <div class="section-meta">${s.questions.length} Fragen</div>
+        <div class="section-chevron">⌄</div>
+      </div>
+      <div class="section-body">
+        ${s.prefilled?`<div class="prefilled-banner"><span style="font-size:15px">⚡</span><div><div class="prefilled-label">Bereits bekannt</div><div class="prefilled-text">${s.prefilled}</div></div></div>`:''}
+        <div class="questions-list">${qHtml}</div>
+      </div>`;
+    main.appendChild(sec);
+  });
+}
+
+function updateStats(){
+  let totalQ=0,totalA=0; const people=new Set();
+  SECTIONS.forEach(s=>{ totalQ+=s.questions.length; s.questions.forEach((_,i)=>{ const arr=getAnswers(s.id,i); totalA+=arr.length; arr.forEach(a=>{ if((a.name||'').trim()) people.add(a.name.trim()); }); }); });
+  const covered=totalQ?Math.round(SECTIONS.reduce((acc,s)=>{ s.questions.forEach((_,i)=>{ if(getAnswers(s.id,i).length>0) acc++; }); return acc; },0)/totalQ*100):0;
+  document.getElementById('st-questions').textContent=totalQ;
+  document.getElementById('st-answers').textContent=totalA;
+  document.getElementById('st-people').textContent=people.size;
+  document.getElementById('st-covered').textContent=covered+'%';
+}
+
+// ── EXPORT ──
+function buildExportText(){
+  let out='HANDBUCH-FRAGEBOGEN — THE GYM / FIGHT GYM (ADMIN-EXPORT)\n'+'='.repeat(60)+'\n\n';
+  SECTIONS.forEach(s=>{
+    out+=`\n${'─'.repeat(60)}\n${s.id}. ${s.title.toUpperCase()}\n${'─'.repeat(60)}\n`;
+    if(s.prefilled) out+=`[BEREITS BEKANNT] ${s.prefilled}\n\n`;
+    s.questions.forEach((q,i)=>{
+      const arr=getAnswers(s.id,i);
+      out+=`\nF${i+1}: ${q.q}\n`;
+      if(!arr.length) out+=`  → (keine Antwort)\n`;
+      else arr.forEach(a=>{ out+=`  [${(a.name||'Unbekannt').trim()}]: ${a.text.trim()}\n`; });
+    });
+  });
+  return out;
+}
+function openExport(){ document.getElementById('export-preview').textContent=buildExportText(); document.getElementById('modal').classList.add('open'); }
+function closeExport(){ document.getElementById('modal').classList.remove('open'); }
+function copyExport(){ navigator.clipboard.writeText(buildExportText()); alert('Kopiert!'); }
+function downloadExport(){
+  const blob=new Blob([buildExportText()],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Gym_Admin_Antworten.txt'; a.click();
+}
+document.getElementById('modal').addEventListener('click',function(e){ if(e.target===this) closeExport(); });
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// Focus password field
+setTimeout(()=>document.getElementById('pwInput').focus(),100);
+</script>
+</body>
+</html>

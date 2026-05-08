@@ -3,140 +3,137 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Handbuch-Fragebogen · THE GYM / Fight Gym</title>
+<title>Handbuch-Fragebogen · THE GYM</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+:root{--bg:#ffffff;--surface:#f8f9fa;--surface2:#f0f2f5;--surface3:#e8ebef;--border:#d0d5dd;--accent:#e8232a;--accent2:#d97706;--text:#111827;--muted:#4b5563;--green:#16a34a;--green-bg:#f0fdf4;--blue:#2563eb;--radius:10px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:16px;}
 
-  :root {
-    --bg: #0e0e10; --surface: #18181c; --surface2: #222228; --surface3: #1c1c22;
-    --border: #2e2e38; --border2: #3a3a48;
-    --accent: #e8232a; --accent2: #f0a500;
-    --text: #e8e8ec; --muted: #7a7a8c;
-    --green: #22c55e; --blue: #3b82f6; --radius: 10px;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'DM Sans',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+/* NAME MODAL */
+.name-modal-overlay{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+.name-modal{background:#fff;border-radius:16px;padding:36px 32px;max-width:420px;width:90%;box-shadow:0 24px 60px rgba(0,0,0,0.15);text-align:center;}
+.name-modal .logo{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);letter-spacing:2px;margin-bottom:4px;}
+.name-modal h2{font-size:22px;font-weight:700;margin-bottom:8px;color:var(--text);}
+.name-modal p{font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.6;}
+.name-modal input{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:10px;font-size:16px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;color:var(--text);}
+.name-modal input:focus{border-color:var(--accent);}
+.name-modal button{width:100%;margin-top:14px;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.15s;}
+.name-modal button:hover{background:#c01920;}
+.name-modal button:disabled{background:#ccc;cursor:not-allowed;}
+.name-badge{font-size:11px;color:var(--muted);margin-top:16px;}
 
-  /* TOP BAR */
-  .topbar { position:sticky; top:0; z-index:100; background:rgba(14,14,16,0.95); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); padding:10px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
-  .topbar-left { display:flex; align-items:center; gap:12px; flex-shrink:0; }
-  .topbar-logo { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:2px; color:var(--accent); }
-  .topbar-sep { color:var(--border2); font-size:18px; }
-  .topbar-title { font-size:12px; color:var(--muted); }
-  .topbar-right { display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
-  .progress-wrap { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); }
-  .progress-bar-outer { width:110px; height:4px; background:var(--border); border-radius:99px; overflow:hidden; }
-  .progress-bar-inner { height:100%; background:var(--green); border-radius:99px; transition:width 0.4s; width:0%; }
-  #progress-label { color:var(--green); font-weight:700; min-width:32px; }
+/* TOP BAR */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.97);backdrop-filter:blur(12px);border-bottom:2px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 1px 8px rgba(0,0,0,0.06);}
+.topbar-left{display:flex;align-items:center;gap:14px;flex-shrink:0;}
+.topbar-logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--accent);}
+.topbar-sep{color:#b0b8c4;font-size:20px;}
+.topbar-title{font-size:14px;color:var(--muted);font-weight:500;}
+.topbar-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
+.user-chip{display:flex;align-items:center;gap:7px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 12px 5px 8px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;}
+.user-chip:hover{background:var(--surface3);}
+.progress-wrap{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);}
+.progress-bar-outer{width:120px;height:6px;background:var(--surface3);border-radius:99px;overflow:hidden;}
+.progress-bar-inner{height:100%;background:var(--green);border-radius:99px;transition:width 0.4s;width:0%;}
+#progress-label{color:var(--green);font-weight:700;min-width:36px;font-size:14px;}
+.btn{padding:9px 18px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.15s;white-space:nowrap;}
+.btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
+.btn-ghost:hover{background:var(--surface3);}
+.btn-admin{background:#1e293b;color:#fff;}
+.btn-admin:hover{background:#0f172a;}
 
-  .btn { padding:7px 14px; border-radius:7px; font-size:12px; font-weight:600; cursor:pointer; border:none; font-family:'DM Sans',sans-serif; transition:all 0.15s; white-space:nowrap; }
-  .btn-ghost { background:var(--surface2); color:var(--text); border:1px solid var(--border); }
-  .btn-ghost:hover { background:var(--border); }
-  .btn-export { background:var(--accent2); color:#000; }
-  .btn-export:hover { background:#d4900a; }
-  .btn-add { background:rgba(59,130,246,0.12); color:var(--blue); border:1px solid rgba(59,130,246,0.25); font-size:11px; padding:5px 12px; border-radius:6px; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; font-weight:600; }
-  .btn-add:hover { background:rgba(59,130,246,0.22); }
-  .btn-del { background:rgba(232,35,42,0.08); color:var(--accent); border:1px solid rgba(232,35,42,0.18); font-size:10px; padding:3px 8px; border-radius:5px; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; line-height:1; }
-  .btn-del:hover { background:rgba(232,35,42,0.18); }
+/* NAV */
+.nav-pills{position:sticky;top:57px;z-index:90;background:#fff;border-bottom:1px solid var(--border);padding:0 24px;display:flex;overflow-x:auto;scrollbar-width:none;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+.nav-pills::-webkit-scrollbar{display:none;}
+.nav-pill{padding:12px 14px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all 0.15s;display:flex;align-items:center;gap:6px;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif;}
+.nav-pill:hover{color:var(--text);}
+.pill-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.pill-done{display:none;width:15px;height:15px;background:var(--green);border-radius:50%;flex-shrink:0;align-items:center;justify-content:center;font-size:9px;color:#fff;}
+.nav-pill.all-done .pill-done{display:flex;}
+.nav-pill.all-done .pill-dot{display:none;}
 
-  /* NAV PILLS */
-  .nav-pills { position:sticky; top:49px; z-index:90; background:var(--bg); border-bottom:1px solid var(--border); padding:0 20px; display:flex; overflow-x:auto; scrollbar-width:none; }
-  .nav-pills::-webkit-scrollbar { display:none; }
-  .nav-pill { padding:10px 12px; font-size:11px; font-weight:600; color:var(--muted); cursor:pointer; white-space:nowrap; border-bottom:2px solid transparent; transition:all 0.15s; display:flex; align-items:center; gap:5px; background:none; border-top:none; border-left:none; border-right:none; font-family:'DM Sans',sans-serif; }
-  .nav-pill:hover { color:var(--text); }
-  .pill-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
-  .pill-done { display:none; width:13px; height:13px; background:var(--green); border-radius:50%; flex-shrink:0; align-items:center; justify-content:center; font-size:8px; color:#000; }
-  .nav-pill.all-done .pill-done { display:flex; }
-  .nav-pill.all-done .pill-dot { display:none; }
+/* HERO */
+.hero{padding:36px 28px 26px;max-width:960px;margin:0 auto;border-bottom:1px solid var(--border);margin-bottom:12px;}
+.hero-tag{display:inline-block;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--accent2);margin-bottom:12px;border:1px solid #fcd34d;padding:4px 12px;border-radius:6px;background:#fffbeb;}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,5vw,58px);line-height:1;letter-spacing:1px;margin-bottom:10px;color:var(--text);}
+.hero h1 span{color:var(--accent);}
+.hero-sub{font-size:15px;color:var(--muted);line-height:1.7;max-width:580px;margin-bottom:18px;}
+.hero-stats{display:flex;gap:28px;flex-wrap:wrap;}
+.stat{display:flex;flex-direction:column;gap:3px;}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--text);letter-spacing:1px;}
+.stat-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;}
 
-  /* HERO */
-  .hero { padding:38px 24px 26px; max-width:900px; margin:0 auto; border-bottom:1px solid var(--border); margin-bottom:8px; }
-  .hero-tag { display:inline-block; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--accent2); margin-bottom:10px; border:1px solid rgba(240,165,0,0.3); padding:3px 9px; border-radius:4px; }
-  .hero h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(32px,5vw,50px); line-height:1; letter-spacing:1px; margin-bottom:10px; }
-  .hero h1 span { color:var(--accent); }
-  .hero-sub { font-size:13px; color:var(--muted); line-height:1.6; max-width:580px; margin-bottom:16px; }
-  .hero-stats { display:flex; gap:20px; flex-wrap:wrap; }
-  .stat { display:flex; flex-direction:column; gap:2px; }
-  .stat-num { font-family:'Bebas Neue',sans-serif; font-size:26px; color:var(--text); letter-spacing:1px; }
-  .stat-lbl { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+/* MAIN */
+.main{max-width:960px;margin:0 auto;padding:14px 24px 80px;}
 
-  /* MAIN */
-  .main { max-width:900px; margin:0 auto; padding:14px 20px 60px; }
+/* SECTION */
+.section{margin-bottom:8px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+.section-header{display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;transition:background 0.15s;user-select:none;background:#fff;}
+.section-header:hover{background:var(--surface);}
+.section-num{font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1;opacity:0.18;min-width:32px;color:var(--text);}
+.section-color-bar{width:4px;height:34px;border-radius:2px;flex-shrink:0;}
+.section-title-block{flex:1;}
+.section-title{font-size:16px;font-weight:700;margin-bottom:2px;color:var(--text);}
+.section-meta{font-size:13px;color:var(--muted);}
+.section-chevron{color:var(--muted);font-size:18px;transition:transform 0.2s;}
+.section.open .section-chevron{transform:rotate(180deg);}
+.section-progress-mini{display:flex;align-items:center;gap:6px;font-size:12px;}
+.mini-bar{width:50px;height:4px;background:var(--surface3);border-radius:99px;overflow:hidden;}
+.mini-bar-fill{height:100%;border-radius:99px;transition:width 0.3s;}
+.section-body{display:none;background:#fff;}
+.section.open .section-body{display:block;}
 
-  /* SECTION */
-  .section { margin-bottom:6px; border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
-  .section-header { display:flex; align-items:center; gap:12px; padding:14px 18px; cursor:pointer; transition:background 0.15s; user-select:none; }
-  .section-header:hover { background:rgba(255,255,255,0.02); }
-  .section-num { font-family:'Bebas Neue',sans-serif; font-size:24px; line-height:1; opacity:0.22; min-width:28px; }
-  .section-color-bar { width:3px; height:30px; border-radius:2px; flex-shrink:0; }
-  .section-title-block { flex:1; }
-  .section-title { font-size:14px; font-weight:700; margin-bottom:1px; }
-  .section-meta { font-size:11px; color:var(--muted); }
-  .section-chevron { color:var(--muted); font-size:15px; transition:transform 0.2s; }
-  .section.open .section-chevron { transform:rotate(180deg); }
-  .section-progress-mini { display:flex; align-items:center; gap:5px; font-size:11px; }
-  .mini-bar { width:42px; height:3px; background:var(--border); border-radius:99px; overflow:hidden; }
-  .mini-bar-fill { height:100%; border-radius:99px; transition:width 0.3s; }
-  .section-body { display:none; }
-  .section.open .section-body { display:block; }
+/* PREFILLED */
+.prefilled-banner{margin:14px 20px 0;padding:12px 16px;background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;display:flex;gap:10px;align-items:flex-start;}
+.prefilled-label{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent2);margin-bottom:3px;}
+.prefilled-text{font-size:13px;color:#92400e;line-height:1.6;}
 
-  /* PREFILLED */
-  .prefilled-banner { margin:12px 18px 0; padding:9px 12px; background:rgba(240,165,0,0.07); border:1px solid rgba(240,165,0,0.2); border-radius:7px; display:flex; gap:9px; align-items:flex-start; }
-  .prefilled-icon { font-size:13px; flex-shrink:0; margin-top:1px; }
-  .prefilled-label { font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--accent2); margin-bottom:2px; }
-  .prefilled-text { font-size:11px; color:rgba(240,165,0,0.85); line-height:1.5; }
+/* QUESTION CARD */
+.questions-list{padding:12px 20px 20px;display:flex;flex-direction:column;gap:12px;}
+.q-card{background:#fff;border:1.5px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+.q-card.has-answer{border-color:#86efac;background:var(--green-bg);}
+.q-header{display:flex;gap:10px;align-items:flex-start;padding:14px 16px 8px;}
+.q-num{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);min-width:22px;padding-top:2px;font-weight:500;}
+.q-text{font-size:15px;font-weight:700;line-height:1.5;flex:1;color:var(--text);}
+.q-answered-badge{font-size:12px;padding:3px 9px;background:#dcfce7;color:var(--green);border-radius:6px;font-weight:700;white-space:nowrap;flex-shrink:0;border:1px solid #86efac;display:none;}
+.q-card.has-answer .q-answered-badge{display:block;}
+.q-hint{font-size:13px;color:var(--muted);padding:0 16px 10px 48px;line-height:1.6;font-style:italic;}
 
-  /* QUESTION CARD */
-  .questions-list { padding:10px 18px 18px; display:flex; flex-direction:column; gap:10px; }
-  .q-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; overflow:hidden; transition:border-color 0.2s; }
-  .q-card.has-answer { border-color:rgba(34,197,94,0.3); }
-  .q-header { display:flex; gap:9px; align-items:flex-start; padding:11px 13px 6px; }
-  .q-num { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); min-width:18px; padding-top:2px; }
-  .q-text { font-size:13px; font-weight:600; line-height:1.45; flex:1; }
-  .q-count-badge { font-size:10px; padding:2px 7px; background:rgba(34,197,94,0.12); color:var(--green); border-radius:4px; font-weight:700; white-space:nowrap; flex-shrink:0; }
-  .q-hint { font-size:11px; color:var(--muted); padding:0 13px 8px 40px; line-height:1.5; font-style:italic; }
+/* SINGLE ANSWER AREA */
+.answer-wrap{padding:0 16px 16px;}
+.answer-box{background:#fff;border:1.5px solid var(--border);border-radius:9px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);}
+.answer-box:focus-within{border-color:#93c5fd;box-shadow:0 0 0 3px #eff6ff;}
+.answer-box.filled{border-color:#86efac;background:var(--green-bg);}
+.answer-box-header{display:flex;align-items:center;gap:10px;padding:10px 14px 8px;border-bottom:1px solid var(--border);background:var(--surface);}
+.answer-box-name{font-size:14px;font-weight:700;color:var(--text);}
+.answer-box-you{font-size:11px;background:#dbeafe;color:var(--blue);border:1px solid #bfdbfe;border-radius:4px;padding:2px 8px;font-weight:600;}
+.answer-textarea{width:100%;min-height:80px;background:transparent;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.7;resize:vertical;padding:12px 14px;}
+.answer-textarea::placeholder{color:#9ca3af;font-size:14px;}
 
-  /* ANSWERS */
-  .answers-area { padding:0 13px 4px; display:flex; flex-direction:column; gap:7px; }
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;z-index:999;background:#fff;border:1.5px solid var(--green);border-radius:10px;padding:12px 18px;font-size:14px;font-weight:600;color:var(--green);display:flex;align-items:center;gap:8px;transform:translateY(70px);opacity:0;transition:all 0.3s;box-shadow:0 4px 16px rgba(0,0,0,0.1);}
+.toast.show{transform:translateY(0);opacity:1;}
 
-  .answer-entry { background:var(--surface2); border:1px solid var(--border); border-radius:7px; overflow:hidden; transition:border-color 0.2s; animation:slideIn 0.18s ease; }
-  .answer-entry:focus-within { border-color:var(--accent2); }
-  .answer-entry.filled { border-color:rgba(34,197,94,0.32); }
-
-  @keyframes slideIn { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:translateY(0); } }
-
-  .answer-header { display:flex; align-items:center; gap:8px; padding:7px 10px 6px; border-bottom:1px solid var(--border); background:rgba(0,0,0,0.18); }
-  .name-icon { font-size:12px; flex-shrink:0; }
-  .name-input { flex:1; background:transparent; border:none; outline:none; color:var(--text); font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; }
-  .name-input::placeholder { color:var(--muted); font-weight:400; }
-  .answer-num { font-family:'DM Mono',monospace; font-size:9px; color:var(--muted); padding:1px 6px; background:var(--surface3); border-radius:3px; flex-shrink:0; }
-  .answer-body { padding:7px 10px 4px; }
-  .answer-textarea { width:100%; min-height:60px; background:transparent; border:none; outline:none; color:var(--text); font-family:'DM Sans',sans-serif; font-size:13px; line-height:1.6; resize:vertical; }
-  .answer-textarea::placeholder { color:var(--muted); font-size:12px; }
-  .answer-footer { display:flex; justify-content:flex-end; padding:2px 10px 7px; }
-
-  .add-answer-row { display:flex; justify-content:center; padding:6px 0 10px; }
-
-  /* MODAL */
-  .modal-overlay { display:none; position:fixed; inset:0; z-index:500; background:rgba(0,0,0,0.78); align-items:center; justify-content:center; backdrop-filter:blur(4px); }
-  .modal-overlay.open { display:flex; }
-  .modal { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:24px; max-width:560px; width:92%; max-height:82vh; overflow-y:auto; }
-  .modal h2 { font-family:'Bebas Neue',sans-serif; font-size:26px; margin-bottom:5px; }
-  .modal p { font-size:13px; color:var(--muted); margin-bottom:14px; }
-  .modal-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:14px; flex-wrap:wrap; }
-  .export-preview { background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:12px; font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); max-height:280px; overflow-y:auto; white-space:pre-wrap; line-height:1.7; }
-
-  /* TOAST */
-  .toast { position:fixed; bottom:20px; right:20px; z-index:999; background:var(--surface); border:1px solid var(--green); border-radius:8px; padding:9px 14px; font-size:12px; color:var(--green); display:flex; align-items:center; gap:7px; transform:translateY(70px); opacity:0; transition:all 0.3s; }
-  .toast.show { transform:translateY(0); opacity:1; }
-
-  ::-webkit-scrollbar { width:5px; }
-  ::-webkit-scrollbar-track { background:transparent; }
-  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--surface);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
 </style>
 </head>
 <body>
 
+<!-- NAME MODAL -->
+<div class="name-modal-overlay" id="nameModal">
+  <div class="name-modal">
+    <div class="logo">THE GYM</div>
+    <h2>Willkommen! 👋</h2>
+    <p>Bitte gib deinen Namen ein, damit deine Antworten richtig zugeordnet werden.</p>
+    <input type="text" id="nameInput" placeholder="Dein Vor- und Nachname…" maxlength="60" oninput="checkName()" onkeydown="if(event.key==='Enter') startWithName()"/>
+    <button id="startBtn" onclick="startWithName()" disabled>Weiter →</button>
+    <div class="name-badge">Dein Name wird lokal gespeichert und nur für deine Antworten verwendet.</div>
+  </div>
+</div>
+
+<!-- TOP BAR -->
 <div class="topbar">
   <div class="topbar-left">
     <div class="topbar-logo">THE GYM</div>
@@ -144,46 +141,42 @@
     <div class="topbar-title">Handbuch-Fragebogen</div>
   </div>
   <div class="topbar-right">
+    <div class="user-chip" onclick="changeName()" title="Namen ändern">
+      👤 <span id="topbar-name">–</span>
+    </div>
     <div class="progress-wrap">
       <div class="progress-bar-outer"><div class="progress-bar-inner" id="main-progress-bar"></div></div>
       <span id="progress-label">0%</span>
     </div>
-    <button class="btn btn-ghost" onclick="clearAll()">↺ Reset</button>
-    <button class="btn btn-export" onclick="openExport()">⬇ Export</button>
+    <a href="admin.html" class="btn btn-admin">🔒 Admin</a>
   </div>
 </div>
 
+<!-- NAV PILLS -->
 <div class="nav-pills" id="nav-pills"></div>
 
+<!-- HERO -->
 <div class="hero">
   <div class="hero-tag">Fight Gym Nürnberg · THE GYM Nürnberg / Schwabach</div>
   <h1>Handbuch<br><span>Fragebogen</span></h1>
-  <p class="hero-sub">Mehrere Personen können zu jeder Frage eine eigene Antwort hinterlegen — einfach Namen eingeben, Antwort schreiben, fertig. Alles wird automatisch im Browser gespeichert.</p>
+  <p class="hero-sub">Beantworte die Fragen in deinem eigenen Feld. Deine Antworten werden automatisch gespeichert.</p>
   <div class="hero-stats">
     <div class="stat"><div class="stat-num">18</div><div class="stat-lbl">Abschnitte</div></div>
     <div class="stat"><div class="stat-num" id="stat-total">0</div><div class="stat-lbl">Fragen</div></div>
-    <div class="stat"><div class="stat-num" id="stat-answers" style="color:var(--green)">0</div><div class="stat-lbl">Antworten</div></div>
-    <div class="stat"><div class="stat-num" id="stat-contributors" style="color:var(--accent2)">0</div><div class="stat-lbl">Personen</div></div>
+    <div class="stat"><div class="stat-num" id="stat-done" style="color:var(--green)">0</div><div class="stat-lbl">Beantwortet</div></div>
   </div>
 </div>
 
 <div class="main" id="main-content"></div>
-<div class="toast" id="toast">✓ Automatisch gespeichert</div>
-
-<div class="modal-overlay" id="modal">
-  <div class="modal">
-    <h2>Export</h2>
-    <p>Alle Antworten aller Personen herunterladen oder kopieren.</p>
-    <div class="export-preview" id="export-preview"></div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeExport()">Schließen</button>
-      <button class="btn btn-ghost" onclick="copyExport()">📋 Kopieren</button>
-      <button class="btn btn-export" onclick="downloadExport()">⬇ .txt laden</button>
-    </div>
-  </div>
-</div>
+<div class="toast" id="toast">✓ Gespeichert</div>
 
 <script>
+const STORE_KEY = 'gym_hb_v3';
+const NAME_KEY = 'gym_hb_username';
+let currentName = '';
+let answers = {};
+
+// ── SECTIONS DATA ──
 const SECTIONS = [
 {id:1,title:"Onboarding & Grundlagen",color:"#e8232a",prefilled:"THE GYM Nürnberg, THE GYM Schwabach und Fight Gym Nürnberg gehören zum selben Unternehmen. Inhaber: Meister Christian. Stellv. Leitung Nürnberg: Tatjana Bektovic.",questions:[
 {q:"In welchem Jahr wurde das erste Studio eröffnet — und was war die ursprüngliche Vision?",hint:"Gründungsjahr, Motivation, erste Idee dahinter."},
@@ -200,7 +193,7 @@ const SECTIONS = [
 ]},
 {id:2,title:"Arbeitszeiten & Organisation",color:"#22c55e",prefilled:"Nuki Smart Lock im Einsatz. Gesetzliche Pausenpflicht: ab 6h = 30 Min, ab 9h = 45 Min.",questions:[
 {q:"Über welchen Kanal wird der Schichtplan kommuniziert?",hint:"WhatsApp-Gruppe, App, Aushang, Google Sheet — bitte genau benennen."},
-{q:"Was muss bei einer Schichtübergabe zwingend übergeben werden?",hint:"Kassenstand, offene Aufgaben, Technikprobleme, besondere Vorkommnisse — vollständige Liste."},
+{q:"Was muss bei einer Schichtübergabe zwingend übergeben werden?",hint:"Kassenstand, offene Aufgaben, Technikprobleme, besondere Vorkommnisse."},
 {q:"Welches Tool wird zur Zeiterfassung genutzt — und wie genau funktioniert es?",hint:"App-Name, Schritt für Schritt: einloggen, Start, Pause, Ende."},
 {q:"Was passiert, wenn ein Mitarbeiter das Einstempeln vergessen hat?",hint:"Selbst nachtragen? Vorgesetzten informieren? Frist?"},
 {q:"Wann darf die Pause gemacht werden — wer übernimmt die Theke währenddessen?",hint:"Regelung bei Alleinarbeit, Absprache mit Kollegen."},
@@ -211,11 +204,11 @@ const SECTIONS = [
 {id:3,title:"Tagesbericht & Reporting",color:"#3b82f6",prefilled:"",questions:[
 {q:"Welche Felder sind im Tagesbericht Pflicht — bitte vollständige Liste?",hint:"Datum, Schicht, Kassenstand Anfang/Ende, Probetrainings, Vorfälle, Verkäufe, Technikprobleme."},
 {q:"Wann und wie wird der Tagesbericht eingereicht — an wen?",hint:"Am Schichtende? Per App / WhatsApp / E-Mail? Wer liest ihn?"},
-{q:"Beschreibe den Kassenbericht / Tagesabschluss Schritt für Schritt.",hint:"Bargeld zählen, Kassensystem abgleichen, Differenz dokumentieren, Geld weglegen — wo und wie?"},
+{q:"Beschreibe den Kassenbericht / Tagesabschluss Schritt für Schritt.",hint:"Bargeld zählen, Kassensystem abgleichen, Differenz dokumentieren, Geld weglegen."},
 {q:"Was ist ein 'kleines' Problem (selbst lösen) vs. eines, das sofort eskaliert wird?",hint:"Je 2–3 Beispiele für beide Kategorien."},
 ]},
 {id:4,title:"Probetraining",color:"#a855f7",prefilled:"THE GYM und Fight Gym bieten Probetrainings an (Buchung per Telefon oder Website).",questions:[
-{q:"Wie läuft ein Probetraining ab — von der Anfrage bis zum Abschluss-Gespräch?",hint:"Schritt für Schritt: Anfrage → Terminbestätigung → Empfang → Führung → Training → Gespräch → Entscheidung."},
+{q:"Wie läuft ein Probetraining ab — von der Anfrage bis zum Abschluss-Gespräch?",hint:"Schritt für Schritt: Anfrage → Terminbestätigung → Empfang → Führung → Training → Gespräch."},
 {q:"Was wird dem Gast beim Empfang gezeigt und erklärt?",hint:"Umkleide, Duschen, Trainingsbereich, Geräte, Regeln — in welcher Reihenfolge?"},
 {q:"Was sind die 3–5 stärksten Verkaufsargumente für eine Mitgliedschaft?",hint:"Preis-Leistung, Lage, Kurse, Gemeinschaft, Flexibilität."},
 {q:"In welcher Reihenfolge werden die Tarife präsentiert (höchster zuerst)?",hint:"Präsentationsstrategie: Premium → Basis oder umgekehrt?"},
@@ -281,8 +274,8 @@ const SECTIONS = [
 ]},
 {id:12,title:"Kurse & Stundenplan",color:"#0ea5e9",prefilled:"THE GYM und Fight Gym bieten Kampfsport- und Fitness-Kurse an.",questions:[
 {q:"Bitte den aktuellen Stundenplan aller Kurse an allen Standorten eintragen.",hint:"Kursname, Tag, Uhrzeit, Trainer, Standort, max. Teilnehmerzahl."},
-{q:"Was tut ein Mitarbeiter, wenn ein Kurs voll ist?",hint:"Warteliste führen? Nächsten Termin empfehlen? Wie kommuniziert man das freundlich?"},
-{q:"Wie wird ein Kurs-Ausfall oder Trainerwechsel kommuniziert?",hint:"Wer entscheidet? Wer informiert? Über welchen Kanal? Wie kurzfristig?"},
+{q:"Was tut ein Mitarbeiter, wenn ein Kurs voll ist?",hint:"Warteliste führen? Nächsten Termin empfehlen?"},
+{q:"Wie wird ein Kurs-Ausfall oder Trainerwechsel kommuniziert?",hint:"Wer entscheidet? Wer informiert? Über welchen Kanal?"},
 {q:"Welche Kurzbeschreibung soll ein Mitarbeiter für jeden Kurs kennen?",hint:"Pro Kurs: Was ist das? Für wen? Vorkenntnisse nötig?"},
 ]},
 {id:13,title:"Notfälle & Sicherheit",color:"#dc2626",prefilled:"Notruf Verletzungen: 112. Notruf Polizei: 110.",questions:[
@@ -298,7 +291,7 @@ const SECTIONS = [
 {q:"Wie geht ein Mitarbeiter mit einer direkten Beschwerde gegen sich selbst um?",hint:"Ruhig bleiben, zuhören, nicht rechtfertigen — dann was?"},
 {q:"Was ist der Beschwerde-Prozess Schritt für Schritt?",hint:"Zuhören → Verstehen → Lösen → Dokumentieren → Eskalieren?"},
 {q:"Wie geht ein Mitarbeiter mit einer aggressiven oder bedrohlichen Person um?",hint:"Deeskalation, Rückzug, wen alarmieren, wann Polizei rufen?"},
-{q:"Wann und wie wird der Vorgesetzte hinzugezogen?",hint:"Sofort bei Androhung von Gewalt? Immer bei Vertragsthemen? Klare Schwelle."},
+{q:"Wann und wie wird der Vorgesetzte hinzugezogen?",hint:"Sofort bei Androhung von Gewalt? Immer bei Vertragsthemen?"},
 {q:"Wer darf ein Hausverbot aussprechen — wie wird es schriftlich festgehalten?",hint:"Formular? Foto? Was wird dem Betroffenen mitgeteilt?"},
 ]},
 {id:15,title:"Zuständigkeiten & Kontakte",color:"#14b8a6",prefilled:"Inhaber: Meister Christian. Stellv. Leitung Nürnberg: Tatjana Bektovic.",questions:[
@@ -316,7 +309,7 @@ const SECTIONS = [
 {id:17,title:"Reinigung & Hygiene",color:"#84cc16",prefilled:"",questions:[
 {q:"Was sind die täglichen Reinigungsaufgaben an der Theke und im Eingangsbereich?",hint:"Was genau, wann (Öffnung/Schichtende/Schließung), womit gereinigt?"},
 {q:"Was reinigt der Mitarbeiter selbst — was macht die externe Reinigungsfirma?",hint:"Klare Grenzziehung: Böden, Geräte, Toiletten, Theke."},
-{q:"Welche Hygienestandards müssen eingehalten werden?",hint:"Handschuhe? Desinfektionsmittel für welche Flächen? Vorschriften?"},
+{q:"Welche Hygienestandards müssen eingehalten werden?",hint:"Handschuhe? Desinfektionsmittel für welche Flächen?"},
 {q:"Wie funktioniert die Mülltrennung im Studio?",hint:"Welche Tonnen gibt es? Was kommt wohin? Wer leert sie wann?"},
 ]},
 {id:18,title:"Kommunikation & Social Media",color:"#f43f5e",prefilled:"Offizielle Kanäle: Instagram, Facebook. Website: thegym-nuernberg.de.",questions:[
@@ -328,62 +321,65 @@ const SECTIONS = [
 ];
 
 // ── STORAGE ──
-const STORE_KEY = 'gym_hb_v3';
-let answers = {};
+function loadAnswers(){ try{ answers=JSON.parse(localStorage.getItem(STORE_KEY)||'{}'); }catch(e){ answers={}; } }
+function saveAnswers(){ localStorage.setItem(STORE_KEY, JSON.stringify(answers)); }
 
-function load() { try { answers = JSON.parse(localStorage.getItem(STORE_KEY)||'{}'); } catch(e){ answers={}; } }
-function save() { localStorage.setItem(STORE_KEY, JSON.stringify(answers)); }
+function getMyAnswer(sId, qIdx){
+  if(!answers[sId]||!answers[sId][qIdx]) return {name:'',text:''};
+  const arr = answers[sId][qIdx];
+  const mine = arr.find(a=>a.name===currentName);
+  return mine || {name:'',text:''};
+}
 
-function getAnswers(sId, qIdx) {
+function setMyAnswer(sId, qIdx, text){
   if(!answers[sId]) answers[sId]={};
-  if(!answers[sId][qIdx]) answers[sId][qIdx]=[{name:'',text:''}];
-  return answers[sId][qIdx];
-}
-
-function setAnswer(sId, qIdx, aIdx, field, val) {
-  const arr = getAnswers(sId, qIdx);
-  if(!arr[aIdx]) arr[aIdx]={name:'',text:''};
-  arr[aIdx][field] = val;
+  if(!answers[sId][qIdx]) answers[sId][qIdx]=[];
+  const arr = answers[sId][qIdx];
+  const idx = arr.findIndex(a=>a.name===currentName);
+  if(idx>=0){ arr[idx].text=text; }
+  else { arr.push({name:currentName, text}); }
+  answers[sId][qIdx]=arr;
   scheduleSave();
-  refreshCard(sId, qIdx);
-  updateSectionProgress(sId);
-  updateStats();
+  refreshCard(sId,qIdx);
+  updateProgress();
 }
 
-function addAnswer(sId, qIdx) {
-  const arr = getAnswers(sId, qIdx);
-  arr.push({name:'',text:''});
-  renderAnswers(sId, qIdx);
-  refreshCard(sId, qIdx);
-  setTimeout(()=>{
-    const inputs = document.querySelectorAll(`#answers-${sId}-${qIdx} .name-input`);
-    if(inputs.length) inputs[inputs.length-1].focus();
-  }, 60);
+// ── NAME ──
+function checkName(){ document.getElementById('startBtn').disabled = !document.getElementById('nameInput').value.trim(); }
+function startWithName(){
+  const n = document.getElementById('nameInput').value.trim();
+  if(!n) return;
+  currentName = n;
+  localStorage.setItem(NAME_KEY, n);
+  document.getElementById('nameModal').style.display='none';
+  document.getElementById('topbar-name').textContent = n;
+  buildAll();
 }
-
-function removeAnswer(sId, qIdx, aIdx) {
-  const arr = getAnswers(sId, qIdx);
-  if(arr.length<=1){ arr[0]={name:'',text:''}; }
-  else { arr.splice(aIdx,1); }
-  renderAnswers(sId, qIdx);
-  refreshCard(sId, qIdx);
-  updateSectionProgress(sId);
-  updateStats();
-  scheduleSave();
+function changeName(){
+  const n = prompt('Namen ändern:', currentName);
+  if(!n||!n.trim()) return;
+  // migrate existing answers to new name
+  loadAnswers();
+  SECTIONS.forEach(s=>{ s.questions.forEach((_,i)=>{ if(answers[s.id]&&answers[s.id][i]){ const arr=answers[s.id][i]; const idx=arr.findIndex(a=>a.name===currentName); if(idx>=0) arr[idx].name=n.trim(); } }); });
+  currentName=n.trim(); localStorage.setItem(NAME_KEY,currentName);
+  saveAnswers();
+  document.getElementById('topbar-name').textContent=currentName;
+  document.querySelectorAll('.answer-box-name').forEach(el=>el.textContent=currentName);
 }
 
 // ── BUILD ──
-function build() {
-  load();
+function buildAll(){
+  loadAnswers();
   buildNav();
   buildSections();
-  updateStats();
+  updateProgress();
+  document.getElementById('stat-total').textContent = SECTIONS.reduce((a,s)=>a+s.questions.length,0);
 }
 
-function buildNav() {
-  const nav = document.getElementById('nav-pills');
-  SECTIONS.forEach(s => {
-    const btn = document.createElement('button');
+function buildNav(){
+  const nav=document.getElementById('nav-pills');
+  SECTIONS.forEach(s=>{
+    const btn=document.createElement('button');
     btn.className='nav-pill'; btn.id=`nav-${s.id}`;
     btn.onclick=()=>document.getElementById(`section-${s.id}`).scrollIntoView({behavior:'smooth',block:'start'});
     btn.innerHTML=`<div class="pill-dot" style="background:${s.color}"></div><div class="pill-done">✓</div>${s.id}. ${s.title}`;
@@ -391,12 +387,12 @@ function buildNav() {
   });
 }
 
-function buildSections() {
-  const main = document.getElementById('main-content');
-  SECTIONS.forEach(s => {
-    const sec = document.createElement('div');
+function buildSections(){
+  const main=document.getElementById('main-content');
+  SECTIONS.forEach(s=>{
+    const sec=document.createElement('div');
     sec.className='section'; sec.id=`section-${s.id}`;
-    const totalQ = s.questions.length;
+    const totalQ=s.questions.length;
     sec.innerHTML=`
       <div class="section-header" onclick="toggleSection(${s.id})">
         <div class="section-num">${String(s.id).padStart(2,'0')}</div>
@@ -412,77 +408,55 @@ function buildSections() {
         <div class="section-chevron">⌄</div>
       </div>
       <div class="section-body" id="body-${s.id}">
-        ${s.prefilled?`<div class="prefilled-banner" style="margin:12px 18px 0"><div class="prefilled-icon">⚡</div><div><div class="prefilled-label">Bereits bekannt</div><div class="prefilled-text">${s.prefilled}</div></div></div>`:''}
+        ${s.prefilled?`<div class="prefilled-banner"><span style="font-size:15px">⚡</span><div><div class="prefilled-label">Bereits bekannt</div><div class="prefilled-text">${s.prefilled}</div></div></div>`:''}
         <div class="questions-list" id="qlist-${s.id}"></div>
       </div>`;
     main.appendChild(sec);
+
     const qlist=sec.querySelector(`#qlist-${s.id}`);
     s.questions.forEach((q,i)=>{
+      const mine=getMyAnswer(s.id,i);
+      const filled=(mine.text||'').trim();
       const card=document.createElement('div');
-      card.className='q-card'; card.id=`qcard-${s.id}-${i}`;
+      card.className='q-card'+(filled?' has-answer':''); card.id=`qcard-${s.id}-${i}`;
       card.innerHTML=`
         <div class="q-header">
           <div class="q-num">${String(i+1).padStart(2,'0')}</div>
           <div class="q-text">${q.q}</div>
-          <div class="q-count-badge" id="qbadge-${s.id}-${i}" style="display:none"></div>
+          <div class="q-answered-badge">✓ Beantwortet</div>
         </div>
         <div class="q-hint">💡 ${q.hint}</div>
-        <div class="answers-area" id="answers-${s.id}-${i}"></div>
-        <div class="add-answer-row">
-          <button class="btn-add" onclick="addAnswer(${s.id},${i})">＋ Weitere Person / Antwort hinzufügen</button>
+        <div class="answer-wrap">
+          <div class="answer-box${filled?' filled':''}" id="abox-${s.id}-${i}">
+            <div class="answer-box-header">
+              <span style="font-size:15px">👤</span>
+              <span class="answer-box-name">${esc(currentName)}</span>
+              <span class="answer-box-you">Du</span>
+            </div>
+            <textarea class="answer-textarea" id="ta-${s.id}-${i}"
+              placeholder="Deine Antwort hier eingeben…"
+              oninput="setMyAnswer(${s.id},${i},this.value)">${esc(mine.text||'')}</textarea>
+          </div>
         </div>`;
       qlist.appendChild(card);
-      renderAnswers(s.id, i);
-      refreshCard(s.id, i);
     });
     updateSectionProgress(s.id);
   });
 }
 
-// ── RENDER ANSWERS ──
-function renderAnswers(sId, qIdx) {
-  const container = document.getElementById(`answers-${sId}-${qIdx}`);
-  if(!container) return;
-  const arr = getAnswers(sId, qIdx);
-  container.innerHTML='';
-  arr.forEach((a, aIdx) => {
-    const filled = (a.name||'').trim()||(a.text||'').trim();
-    const canDelete = arr.length > 1;
-    const entry = document.createElement('div');
-    entry.className='answer-entry'+(filled?' filled':'');
-    entry.id=`entry-${sId}-${qIdx}-${aIdx}`;
-    entry.innerHTML=`
-      <div class="answer-header">
-        <span class="name-icon">👤</span>
-        <input class="name-input" type="text" placeholder="Dein Name eingeben…"
-          value="${esc(a.name||'')}"
-          oninput="setAnswer(${sId},${qIdx},${aIdx},'name',this.value)" />
-        <span class="answer-num">#${aIdx+1}</span>
-        ${canDelete?`<button class="btn-del" onclick="removeAnswer(${sId},${qIdx},${aIdx})">✕ Entfernen</button>`:''}
-      </div>
-      <div class="answer-body">
-        <textarea class="answer-textarea" placeholder="Antwort hier eingeben…"
-          oninput="setAnswer(${sId},${qIdx},${aIdx},'text',this.value)">${esc(a.text||'')}</textarea>
-      </div>`;
-    container.appendChild(entry);
-  });
+function refreshCard(sId,qIdx){
+  const mine=getMyAnswer(sId,qIdx);
+  const filled=(mine.text||'').trim();
+  const card=document.getElementById(`qcard-${sId}-${qIdx}`);
+  const box=document.getElementById(`abox-${sId}-${qIdx}`);
+  if(filled){ card.classList.add('has-answer'); box.classList.add('filled'); }
+  else { card.classList.remove('has-answer'); box.classList.remove('filled'); }
 }
 
-function refreshCard(sId, qIdx) {
-  const arr = getAnswers(sId, qIdx);
-  const filled = arr.filter(a=>(a.text||'').trim());
-  const card = document.getElementById(`qcard-${sId}-${qIdx}`);
-  const badge = document.getElementById(`qbadge-${sId}-${qIdx}`);
-  if(filled.length>0){ card.classList.add('has-answer'); badge.style.display='block'; badge.textContent=filled.length===1?'✓ 1 Antwort':`✓ ${filled.length} Antworten`; }
-  else { card.classList.remove('has-answer'); badge.style.display='none'; }
-  arr.forEach((a,aIdx)=>{ const e=document.getElementById(`entry-${sId}-${qIdx}-${aIdx}`); if(e){ if((a.name||'').trim()||(a.text||'').trim()) e.classList.add('filled'); else e.classList.remove('filled'); } });
-}
-
-// ── PROGRESS & STATS ──
-function updateSectionProgress(sId) {
+function updateSectionProgress(sId){
   const s=SECTIONS.find(x=>x.id===sId);
   let done=0;
-  s.questions.forEach((_,i)=>{ if(getAnswers(sId,i).some(a=>(a.text||'').trim())) done++; });
+  s.questions.forEach((_,i)=>{ if((getMyAnswer(sId,i).text||'').trim()) done++; });
   const pct=s.questions.length?Math.round(done/s.questions.length*100):0;
   const bar=document.getElementById(`mini-bar-${sId}`); const lbl=document.getElementById(`mini-label-${sId}`);
   if(bar) bar.style.width=pct+'%'; if(lbl) lbl.textContent=`${done}/${s.questions.length}`;
@@ -490,64 +464,34 @@ function updateSectionProgress(sId) {
   if(pill){ if(done===s.questions.length&&s.questions.length>0) pill.classList.add('all-done'); else pill.classList.remove('all-done'); }
 }
 
-function updateStats() {
-  let totalQ=0, totalA=0; const names=new Set();
-  SECTIONS.forEach(s=>{ totalQ+=s.questions.length; s.questions.forEach((_,i)=>{ getAnswers(s.id,i).forEach(a=>{ if((a.text||'').trim()) totalA++; if((a.name||'').trim()) names.add(a.name.trim().toLowerCase()); }); }); });
-  document.getElementById('stat-total').textContent=totalQ;
-  document.getElementById('stat-answers').textContent=totalA;
-  document.getElementById('stat-contributors').textContent=names.size;
-  const pct=Math.min(totalQ?Math.round(totalA/totalQ*100):0,100);
+function updateProgress(){
+  let total=0,done=0;
+  SECTIONS.forEach(s=>{ total+=s.questions.length; s.questions.forEach((_,i)=>{ if((getMyAnswer(s.id,i).text||'').trim()) done++; }); });
+  document.getElementById('stat-done').textContent=done;
+  const pct=total?Math.min(Math.round(done/total*100),100):0;
   document.getElementById('main-progress-bar').style.width=pct+'%';
   document.getElementById('progress-label').textContent=pct+'%';
+  SECTIONS.forEach(s=>updateSectionProgress(s.id));
 }
 
-// ── HELPERS ──
 function toggleSection(id){ document.getElementById(`section-${id}`).classList.toggle('open'); }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-let saveTimer=null, toastTimer=null;
-function scheduleSave(){ clearTimeout(saveTimer); saveTimer=setTimeout(()=>{ save(); showToast(); },700); }
-function showToast(){ const t=document.getElementById('toast'); t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2200); }
+let saveTimer=null,toastTimer=null;
+function scheduleSave(){ clearTimeout(saveTimer); saveTimer=setTimeout(()=>{ saveAnswers(); showToast(); },700); }
+function showToast(){ const t=document.getElementById('toast'); t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2000); }
 
-function clearAll(){
-  if(!confirm('Alle Antworten aller Personen löschen?')) return;
-  answers={}; save();
-  SECTIONS.forEach(s=>{ s.questions.forEach((_,i)=>{ renderAnswers(s.id,i); refreshCard(s.id,i); }); updateSectionProgress(s.id); });
-  updateStats();
+// ── INIT ──
+const savedName = localStorage.getItem(NAME_KEY);
+if(savedName){
+  currentName=savedName;
+  document.getElementById('nameModal').style.display='none';
+  document.getElementById('topbar-name').textContent=currentName;
+  buildAll();
+  document.getElementById('section-1').classList.add('open');
+} else {
+  setTimeout(()=>document.getElementById('nameInput').focus(),100);
 }
-
-// ── EXPORT ──
-function buildExportText(){
-  let out='HANDBUCH-FRAGEBOGEN — THE GYM / FIGHT GYM\n'+'='.repeat(60)+'\n';
-  const allNames=new Set();
-  SECTIONS.forEach(s=>s.questions.forEach((_,i)=>getAnswers(s.id,i).forEach(a=>{ if((a.name||'').trim()) allNames.add(a.name.trim()); })));
-  if(allNames.size) out+=`Beiträge von: ${[...allNames].join(', ')}\n`;
-  out+='\n';
-  SECTIONS.forEach(s=>{
-    out+=`\n${'─'.repeat(60)}\n${s.id}. ${s.title.toUpperCase()}\n${'─'.repeat(60)}\n`;
-    if(s.prefilled) out+=`[BEREITS BEKANNT] ${s.prefilled}\n\n`;
-    s.questions.forEach((q,i)=>{
-      const filled=getAnswers(s.id,i).filter(a=>(a.text||'').trim());
-      out+=`\nF${i+1}: ${q.q}\n`;
-      if(!filled.length) out+=`  → (keine Antwort)\n`;
-      else filled.forEach(a=>{ out+=`  [${(a.name||'Unbekannt').trim()}]: ${a.text.trim()}\n`; });
-    });
-  });
-  return out;
-}
-
-function openExport(){ document.getElementById('export-preview').textContent=buildExportText(); document.getElementById('modal').classList.add('open'); }
-function closeExport(){ document.getElementById('modal').classList.remove('open'); }
-function copyExport(){ navigator.clipboard.writeText(buildExportText()); alert('Kopiert!'); }
-function downloadExport(){
-  const blob=new Blob([buildExportText()],{type:'text/plain;charset=utf-8'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Gym_Handbuch_Antworten.txt'; a.click();
-}
-
-document.getElementById('modal').addEventListener('click',function(e){ if(e.target===this) closeExport(); });
-
-build();
-document.getElementById('section-1').classList.add('open');
 </script>
 </body>
 </html>
