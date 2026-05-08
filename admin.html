@@ -84,6 +84,10 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .q-num{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);min-width:24px;padding-top:2px;font-weight:500;}
 .q-text{font-size:15px;font-weight:700;line-height:1.5;flex:1;}
 .q-count{font-size:12px;padding:3px 10px;background:#dcfce7;color:var(--green);border-radius:6px;font-weight:700;border:1px solid #86efac;white-space:nowrap;}
+.q-persons{position:relative;display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:3px 10px;background:#eff6ff;color:#2563eb;border-radius:6px;font-weight:700;border:1px solid #bfdbfe;white-space:nowrap;cursor:default;flex-shrink:0;}
+.q-persons-tooltip{display:none;position:absolute;top:calc(100% + 6px);right:0;z-index:50;background:#1e293b;color:#fff;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:500;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.2);line-height:1.6;min-width:120px;}
+.q-persons-tooltip::before{content:'';position:absolute;top:-5px;right:14px;width:10px;height:10px;background:#1e293b;transform:rotate(45deg);border-radius:2px;}
+.q-persons:hover .q-persons-tooltip{display:block;}
 .q-hint{font-size:13px;color:var(--muted);padding:0 0 0 34px;line-height:1.5;font-style:italic;}
 .q-no-answer{padding:14px 16px;background:var(--surface);border-top:1px solid var(--border);font-size:13px;color:#9ca3af;font-style:italic;}
 
@@ -123,7 +127,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       oninput="clearError()" onkeydown="if(event.key==='Enter') doLogin()"/>
     <div class="error-msg" id="errorMsg"></div>
     <button onclick="doLogin()">Einloggen →</button>
-    <a href="./" class="back-link">← Zurück zur Eingabeseite</a>
+    <a href="." class="back-link">← Zurück zur Eingabeseite</a>
   </div>
 </div>
 
@@ -137,7 +141,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
     <span class="admin-badge">🔒 Admin</span>
   </div>
   <div class="topbar-right">
-    <a href="./" class="btn btn-ghost">← Zur Eingabe</a>
+    <a href="." class="btn btn-ghost">← Zur Eingabe</a>
     <button class="btn btn-export" onclick="openExport()">⬇ Export</button>
   </div>
 </div>
@@ -363,36 +367,56 @@ function buildNav(){
   });
 }
 
+function deduplicateAnswers(arr) {
+  const seen = new Map();
+  arr.forEach(a => {
+    const key = (a.name || 'Unbekannt').trim().toLowerCase();
+    seen.set(key, a);
+  });
+  return Array.from(seen.values()).filter(a => (a.text || '').trim());
+}
+
 function buildSections(){
   const main=document.getElementById('main-content');
   SECTIONS.forEach(s=>{
     const sec=document.createElement('div');
-    sec.className='section open'; sec.id=`section-${s.id}`;
+    sec.className='section'; sec.id=`section-${s.id}`;
     let qHtml='';
+    let sectionAnswerCount=0;
     s.questions.forEach((q,i)=>{
-      const arr=getAnswers(s.id,i);
+      const raw=getAnswers(s.id,i);
+      const arr=deduplicateAnswers(raw);
       const hasAns=arr.length>0;
+      sectionAnswerCount += hasAns ? 1 : 0;
       let answersHtml='';
       if(hasAns){
         answersHtml='<div class="answers-grid">';
         arr.forEach(a=>{
           answersHtml+=`<div class="answer-row">
-            <div class="answer-person"><span class="person-icon">👤</span><span class="person-name">${esc(a.name||'Unbekannt')}</span></div>
-            <div class="answer-text-cell">${esc(a.text||'')}</div>
+            <div class="answer-person"><span class="person-icon">&#128100;</span><span class="person-name">${esc((a.name||'Unbekannt').trim())}</span></div>
+            <div class="answer-text-cell">${esc((a.text||'').trim())}</div>
           </div>`;
         });
         answersHtml+='</div>';
       } else {
-        answersHtml='<div class="q-no-answer">— Noch keine Antwort eingegangen —</div>';
+        answersHtml='<div class="q-no-answer">&#8212; Noch keine Antwort eingegangen &#8212;</div>';
       }
+      const personNames=arr.map(a=>(a.name||'Unbekannt').trim());
+      const personNamesEncoded=encodeURIComponent(personNames.join('||'));
+      const countBadge=hasAns
+        ? `<span class="q-count">&#10003; ${arr.length} Antwort${arr.length>1?'en':''}</span>`
+        : '';
+      const personsBadge=hasAns
+        ? `<span class="q-persons" data-names="${personNamesEncoded}" onmouseenter="showPersonTip(event,this)" onmouseleave="hidePersonTip()">&#128100; ${arr.length} Person${arr.length>1?'en':''}</span>`
+        : '<span style="font-size:12px;color:#9ca3af;padding:3px 8px;font-style:italic">keine Antworten</span>';
       qHtml+=`<div class="q-block${hasAns?' has-answers':''}">
         <div class="q-top">
           <div class="q-row">
             <div class="q-num">${String(i+1).padStart(2,'0')}</div>
             <div class="q-text">${q.q}</div>
-            ${hasAns?`<span class="q-count">✓ ${arr.length} Antwort${arr.length>1?'en':''}</span>`:''}
+            <div style="display:flex;gap:6px;flex-shrink:0;align-items:flex-start;flex-wrap:wrap">${countBadge}${personsBadge}</div>
           </div>
-          <div class="q-hint">💡 ${q.hint}</div>
+          <div class="q-hint">&#128161; ${q.hint}</div>
         </div>
         ${answersHtml}
       </div>`;
@@ -401,11 +425,11 @@ function buildSections(){
       <div class="section-header" onclick="this.parentElement.classList.toggle('open')">
         <div class="section-color-bar" style="background:${s.color}"></div>
         <div class="section-title" style="flex:1">${s.id}. ${s.title}</div>
-        <div class="section-meta">${s.questions.length} Fragen</div>
-        <div class="section-chevron">⌄</div>
+        <div class="section-meta">${sectionAnswerCount}/${s.questions.length} beantwortet</div>
+        <div class="section-chevron">&#8964;</div>
       </div>
       <div class="section-body">
-        ${s.prefilled?`<div class="prefilled-banner"><span style="font-size:15px">⚡</span><div><div class="prefilled-label">Bereits bekannt</div><div class="prefilled-text">${s.prefilled}</div></div></div>`:''}
+        ${s.prefilled?`<div class="prefilled-banner"><span style="font-size:15px">&#9889;</span><div><div class="prefilled-label">Bereits bekannt</div><div class="prefilled-text">${s.prefilled}</div></div></div>`:''}
         <div class="questions-list">${qHtml}</div>
       </div>`;
     main.appendChild(sec);
@@ -447,6 +471,34 @@ function downloadExport(){
 document.getElementById('modal').addEventListener('click',function(e){ if(e.target===this) closeExport(); });
 
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── PERSON TOOLTIP ──
+let tipEl = null;
+function showPersonTip(e, el) {
+  const names = decodeURIComponent(el.dataset.names).split('||');
+  if (!tipEl) {
+    tipEl = document.createElement('div');
+    tipEl.id = 'person-tip';
+    tipEl.style.cssText = 'position:fixed;z-index:9999;background:#1e293b;color:#fff;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:500;line-height:1.7;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.25);min-width:120px;';
+    document.body.appendChild(tipEl);
+  }
+  tipEl.innerHTML = names.map(n => '&#128100; ' + n).join('<br>');
+  tipEl.style.display = 'block';
+  positionTip(e);
+}
+function positionTip(e) {
+  if (!tipEl) return;
+  const x = e.clientX, y = e.clientY;
+  const tw = tipEl.offsetWidth, th = tipEl.offsetHeight;
+  const left = Math.min(x + 10, window.innerWidth - tw - 12);
+  const top = y - th - 10 < 0 ? y + 18 : y - th - 10;
+  tipEl.style.left = left + 'px';
+  tipEl.style.top = top + 'px';
+}
+function hidePersonTip() {
+  if (tipEl) tipEl.style.display = 'none';
+}
+document.addEventListener('mousemove', e => { if (tipEl && tipEl.style.display === 'block') positionTip(e); });
 
 // Focus password field
 setTimeout(()=>document.getElementById('pwInput').focus(),100);
