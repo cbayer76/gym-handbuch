@@ -143,6 +143,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
   <div class="topbar-right">
     <a href="." class="btn btn-ghost">← Zur Eingabe</a>
     <button class="btn btn-export" onclick="openExport()">⬇ Export</button>
+    <button class="btn btn-ghost" onclick="openDebug()" style="font-size:12px">🔍 Debug</button>
   </div>
 </div>
 
@@ -160,6 +161,19 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 
 <!-- MAIN -->
 <div class="main" id="main-content"></div>
+</div>
+
+<!-- DEBUG MODAL -->
+<div class="modal-overlay" id="modal-debug">
+  <div class="modal" style="max-width:700px">
+    <h2>🔍 Debug — localStorage Inhalt</h2>
+    <p id="debug-summary" style="margin-bottom:10px;font-weight:600"></p>
+    <div id="debug-content" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;font-family:DM Mono,monospace;font-size:11px;color:var(--muted);max-height:400px;overflow-y:auto;white-space:pre-wrap;line-height:1.7;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="document.getElementById('modal-debug').classList.remove('open')">Schließen</button>
+      <button class="btn btn-ghost" onclick="copyDebug()">📋 Kopieren</button>
+    </div>
+  </div>
 </div>
 
 <!-- EXPORT MODAL -->
@@ -352,8 +366,10 @@ function initAdmin(){
 }
 
 function getAnswers(sId,qIdx){
-  if(!answers[sId]||!answers[sId][qIdx]) return [];
-  return answers[sId][qIdx].filter(a=>(a.text||'').trim());
+  if(!answers[sId]||!Object.prototype.hasOwnProperty.call(answers[sId],qIdx)) return [];
+  const arr = answers[sId][qIdx];
+  if(!Array.isArray(arr)) return [];
+  return arr.filter(a=>(a.text||'').trim());
 }
 
 function buildNav(){
@@ -469,6 +485,38 @@ function downloadExport(){
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Gym_Admin_Antworten.txt'; a.click();
 }
 document.getElementById('modal').addEventListener('click',function(e){ if(e.target===this) closeExport(); });
+
+function openDebug(){
+  const raw = localStorage.getItem(STORE_KEY);
+  if(!raw){ document.getElementById('debug-content').textContent='(leer — nichts gespeichert)'; document.getElementById('debug-summary').textContent='Kein Eintrag unter Key: '+STORE_KEY; document.getElementById('modal-debug').classList.add('open'); return; }
+  let parsed;
+  try{ parsed=JSON.parse(raw); }catch(e){ document.getElementById('debug-content').textContent='JSON Parse Fehler: '+e.message; document.getElementById('modal-debug').classList.add('open'); return; }
+  
+  // Analyse
+  let totalAnswers=0, sections=[], keys=Object.keys(parsed);
+  keys.forEach(sKey=>{
+    const sObj=parsed[sKey];
+    const qKeys=Object.keys(sObj||{});
+    qKeys.forEach(qKey=>{
+      const arr=sObj[qKey];
+      if(Array.isArray(arr)){
+        arr.forEach(a=>{ if((a.text||'').trim()) totalAnswers++; });
+        if(arr.length) sections.push(`S${sKey}/Q${qKey}: ${arr.length} Einträge (${arr.map(a=>(a.name||'?')+'='+(a.text?'✓':'✗')).join(', ')})`);
+      }
+    });
+  });
+  
+  document.getElementById('debug-summary').textContent = 
+    'Key: '+STORE_KEY+' | Sections mit Daten: '+keys.length+' | Antworten gesamt: '+totalAnswers;
+  document.getElementById('debug-content').textContent = 
+    sections.length ? sections.join('\n') : '(keine Antworten gefunden)\n\nRohe Keys: '+JSON.stringify(keys);
+  document.getElementById('modal-debug').classList.add('open');
+}
+
+function copyDebug(){
+  const txt = document.getElementById('debug-content').textContent;
+  navigator.clipboard.writeText(txt).then(()=>alert('Kopiert!'));
+}
 
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
