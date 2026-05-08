@@ -10,6 +10,48 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:16px;}
 
+/* STATS DASHBOARD */
+.stats-dashboard{background:var(--surface);border-bottom:2px solid var(--border);padding:20px 28px 24px;}
+.stats-dashboard-title{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:20px;}
+.stat-card{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:16px 18px;box-shadow:0 1px 4px rgba(0,0,0,0.04);transition:box-shadow 0.15s;}
+.stat-card:hover{box-shadow:0 3px 12px rgba(0,0,0,0.08);}
+.stat-card-num{font-family:"Bebas Neue",sans-serif;font-size:36px;line-height:1;margin-bottom:4px;letter-spacing:0.5px;}
+.stat-card-lbl{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+.stat-card-sub{font-size:12px;color:var(--muted);margin-top:3px;}
+
+/* PROGRESS BARS */
+.section-bars{display:flex;flex-direction:column;gap:8px;}
+.sbar-row{display:flex;align-items:center;gap:10px;}
+.sbar-label{font-size:12px;font-weight:600;color:var(--text);min-width:180px;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sbar-track{flex:1;background:var(--surface2);border-radius:99px;height:8px;overflow:hidden;}
+.sbar-fill{height:100%;border-radius:99px;transition:width 0.6s cubic-bezier(0.4,0,0.2,1);}
+.sbar-pct{font-size:12px;font-weight:700;color:var(--muted);min-width:36px;text-align:right;}
+
+/* PERSON TABLE */
+.person-table{width:100%;border-collapse:collapse;font-size:13px;}
+.person-table th{text-align:left;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:6px 12px;border-bottom:2px solid var(--border);}
+.person-table td{padding:10px 12px;border-bottom:1px solid var(--surface2);vertical-align:middle;}
+.person-table tr:last-child td{border-bottom:none;}
+.person-table tr:hover td{background:var(--surface);}
+.person-bar-wrap{display:flex;align-items:center;gap:8px;}
+.person-bar-track{flex:1;background:var(--surface2);border-radius:99px;height:6px;overflow:hidden;min-width:60px;}
+.person-bar-fill{height:100%;border-radius:99px;background:var(--blue);}
+
+/* UNANSWERED LIST */
+.unanswered-list{display:flex;flex-direction:column;gap:6px;}
+.unanswered-item{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;background:#fff;border:1px solid var(--border);border-radius:8px;font-size:13px;}
+.u-sec{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:4px;flex-shrink:0;margin-top:1px;}
+.u-q{color:var(--text);line-height:1.4;}
+
+/* TABS */
+.dash-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:16px;}
+.dash-tab{padding:8px 16px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;background:none;border-top:none;border-left:none;border-right:none;font-family:"DM Sans",sans-serif;transition:all 0.15s;}
+.dash-tab:hover{color:var(--text);}
+.dash-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.dash-panel{display:none;}
+.dash-panel.active{display:block;}
+
 /* LOGIN */
 .login-overlay{position:fixed;inset:0;z-index:999;background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);display:flex;align-items:center;justify-content:center;}
 .login-box{background:#fff;border-radius:20px;padding:40px 36px;max-width:400px;width:90%;box-shadow:0 32px 80px rgba(0,0,0,0.4);text-align:center;}
@@ -149,13 +191,72 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
   </div>
 </div>
 
-<!-- STATS -->
-<div class="stats-bar" id="stats-bar">
-  <div class="stat"><div class="stat-num" id="st-sections">18</div><div class="stat-lbl">Abschnitte</div></div>
-  <div class="stat"><div class="stat-num" id="st-questions">0</div><div class="stat-lbl">Fragen</div></div>
-  <div class="stat"><div class="stat-num" id="st-answers" style="color:var(--green)">0</div><div class="stat-lbl">Antworten</div></div>
-  <div class="stat"><div class="stat-num" id="st-people" style="color:var(--blue)">0</div><div class="stat-lbl">Personen</div></div>
-  <div class="stat"><div class="stat-num" id="st-covered" style="color:var(--accent2)">0%</div><div class="stat-lbl">Abgedeckt</div></div>
+<!-- STATS DASHBOARD -->
+<div class="stats-dashboard" id="stats-bar">
+  <div class="stats-dashboard-title">📊 Dashboard</div>
+  <!-- KPI Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-card-num" id="st-questions" style="color:var(--text)">0</div>
+      <div class="stat-card-lbl">Fragen gesamt</div>
+      <div class="stat-card-sub">in 18 Abschnitten</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-num" id="st-answers" style="color:var(--green)">0</div>
+      <div class="stat-card-lbl">Antworten</div>
+      <div class="stat-card-sub" id="st-answers-sub">von 0 Personen</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-num" id="st-people" style="color:var(--blue)">0</div>
+      <div class="stat-card-lbl">Personen</div>
+      <div class="stat-card-sub" id="st-people-sub">haben geantwortet</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-num" id="st-covered" style="color:var(--accent2)">0%</div>
+      <div class="stat-card-lbl">Abgedeckt</div>
+      <div class="stat-card-sub" id="st-covered-sub">Fragen mit mind. 1 Antwort</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-num" id="st-unanswered" style="color:var(--accent)">0</div>
+      <div class="stat-card-lbl">Noch offen</div>
+      <div class="stat-card-sub">Fragen ohne Antwort</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-num" id="st-avg" style="color:var(--muted)">0</div>
+      <div class="stat-card-lbl">Ø pro Person</div>
+      <div class="stat-card-sub">beantwortete Fragen</div>
+    </div>
+  </div>
+
+  <!-- Detail Tabs -->
+  <div class="dash-tabs">
+    <button class="dash-tab active" onclick="switchDashTab('sections')">📋 Abschnitte</button>
+    <button class="dash-tab" onclick="switchDashTab('persons')">👤 Personen</button>
+    <button class="dash-tab" onclick="switchDashTab('unanswered')">❌ Noch offen</button>
+  </div>
+
+  <!-- Tab: Sections progress -->
+  <div class="dash-panel active" id="dash-sections">
+    <div class="section-bars" id="section-bars"></div>
+  </div>
+
+  <!-- Tab: Person breakdown -->
+  <div class="dash-panel" id="dash-persons">
+    <table class="person-table">
+      <thead><tr>
+        <th>Name</th>
+        <th>Antworten</th>
+        <th>Fortschritt</th>
+        <th>Abschnitte</th>
+      </tr></thead>
+      <tbody id="person-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- Tab: Unanswered questions -->
+  <div class="dash-panel" id="dash-unanswered">
+    <div class="unanswered-list" id="unanswered-list"></div>
+  </div>
 </div>
 
 <!-- NAV -->
@@ -481,14 +582,111 @@ function buildSections(){
   });
 }
 
+function switchDashTab(name) {
+  document.querySelectorAll('.dash-tab').forEach((t,i)=>t.classList.toggle('active',['sections','persons','unanswered'][i]===name));
+  document.querySelectorAll('.dash-panel').forEach((p,i)=>p.classList.toggle('active',['dash-sections','dash-persons','dash-unanswered'][i]==='dash-'+name));
+}
+
+function switchTab(tabName){
+  document.querySelectorAll('.dash-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.dash-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+tabName).classList.add('active');
+  // find matching tab button
+  document.querySelectorAll('.dash-tab').forEach(t=>{
+    if(t.getAttribute('onclick')==="switchTab('"+tabName+"')") t.classList.add('active');
+  });
+}
+
 function updateStats(){
-  let totalQ=0,totalA=0; const people=new Set();
-  SECTIONS.forEach(s=>{ totalQ+=s.questions.length; s.questions.forEach((_,i)=>{ const arr=getAnswers(s.id,i); totalA+=arr.length; arr.forEach(a=>{ if((a.name||'').trim()) people.add(a.name.trim()); }); }); });
-  const covered=totalQ?Math.round(SECTIONS.reduce((acc,s)=>{ s.questions.forEach((_,i)=>{ if(getAnswers(s.id,i).length>0) acc++; }); return acc; },0)/totalQ*100):0;
-  document.getElementById('st-questions').textContent=totalQ;
-  document.getElementById('st-answers').textContent=totalA;
-  document.getElementById('st-people').textContent=people.size;
-  document.getElementById('st-covered').textContent=covered+'%';
+  let totalQ=0, totalA=0, coveredQ=0;
+  const people = new Map(); // name -> {count, sections: Set}
+  const unanswered = [];
+  const sectionData = []; // {title, color, answered, total}
+
+  SECTIONS.forEach(s=>{
+    let sAnswered=0;
+    s.questions.forEach((q,i)=>{
+      totalQ++;
+      const arr=getAnswers(s.id,i);
+      if(arr.length>0){ coveredQ++; sAnswered++; }
+      else { unanswered.push({sec:s.id+'. '+s.title, q:q.q, color:s.color}); }
+      arr.forEach(a=>{
+        const name=(a.name||'Unbekannt').trim();
+        if(!people.has(name)) people.set(name,{count:0,sections:new Set()});
+        people.get(name).count++;
+        people.get(name).sections.add(s.id);
+        totalA++;
+      });
+    });
+    const secColors=['#e8232a','#2563eb','#16a34a','#d97706','#7c3aed','#0891b2','#db2777','#65a30d','#ea580c','#0284c7','#9333ea','#b45309','#dc2626','#1d4ed8','#15803d','#c2410c','#6d28d9','#0e7490'];
+    sectionData.push({title:s.id+'. '+s.title, color:s.color||secColors[(s.id-1)%secColors.length], answered:sAnswered, total:s.questions.length});
+  });
+
+  const covered = totalQ ? Math.round(coveredQ/totalQ*100) : 0;
+  const avgPerPerson = people.size ? Math.round(totalA/people.size) : 0;
+
+  // KPI cards
+  // st-questions removed (not in new dashboard)
+  document.getElementById('st-answers').textContent = totalA;
+  document.getElementById('st-answers-sub').textContent = 'von '+people.size+' Person'+(people.size!==1?'en':'');
+  document.getElementById('st-people').textContent = people.size;
+  document.getElementById('st-people-sub').textContent = people.size===0?'noch niemand':people.size===1?'1 Person aktiv':people.size+' Personen aktiv';
+  document.getElementById('st-covered').textContent = covered+'%';
+  // completeSections
+  let completeSectionsCnt = 0;
+  SECTIONS.forEach(s=>{ let all=true; s.questions.forEach((_,i)=>{ if(getAnswers(s.id,i).length===0) all=false; }); if(all&&s.questions.length>0) completeSectionsCnt++; });
+  const elSD = document.getElementById('st-sections-done');
+  if(elSD) elSD.textContent = completeSectionsCnt+' vollständig abgedeckt';
+  document.getElementById('st-covered-sub').textContent = coveredQ+' von '+totalQ+' Fragen';
+  document.getElementById('st-unanswered').textContent = totalQ-coveredQ;
+  // st-avg replaced by st-answers-sub
+
+  // Top Contributor
+  let topName='—', topCount=0;
+  people.forEach((info,name)=>{ if(info.count>topCount){topCount=info.count;topName=name;} });
+  const elTP=document.getElementById('st-top-person');
+  const elTPC=document.getElementById('st-top-person-count');
+  if(elTP) elTP.textContent = topName==='—'?'—':topName.split(' ')[0];
+  if(elTPC) elTPC.textContent = topCount>0?topCount+' Antworten eingegeben':'keine Daten';
+
+  // Section progress bars
+  const barsEl = document.getElementById('section-bars');
+  barsEl.innerHTML = sectionData.map(s=>{
+    const pct = s.total ? Math.round(s.answered/s.total*100) : 0;
+    return `<div class="sbar-row">
+      <div class="sbar-label" title="${s.title}">${s.title}</div>
+      <div class="sbar-track"><div class="sbar-fill" style="width:${pct}%;background:${s.color}"></div></div>
+      <div class="sbar-pct">${pct}%</div>
+    </div>`;
+  }).join('');
+
+  // Person table (sorted by answer count desc)
+  const sortedPeople = Array.from(people.entries()).sort((a,b)=>b[1].count-a[1].count);
+  const tbody = document.getElementById('person-tbody');
+  tbody.innerHTML = sortedPeople.map(([name,info],idx)=>{
+    const pct = totalQ ? Math.round(info.count/totalQ*100) : 0;
+    const medal = idx===0?'🥇':idx===1?'🥈':idx===2?'🥉':'';
+    return `<tr>
+      <td><strong>${medal} ${name}</strong></td>
+      <td><strong style="color:var(--green)">${info.count}</strong> Antworten</td>
+      <td><div class="person-bar-wrap">
+        <div class="person-bar-track"><div class="person-bar-fill" style="width:${pct}%"></div></div>
+        <span style="font-size:12px;font-weight:700;color:var(--muted);min-width:36px">${pct}%</span>
+      </div></td>
+      <td style="color:var(--muted)">${info.sections.size} Abschnitte</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="4" style="color:var(--muted);text-align:center;padding:20px">Noch keine Antworten</td></tr>';
+
+  // Unanswered list (max 50)
+  const unEl = document.getElementById('unanswered-list');
+  const shown = unanswered.slice(0,50);
+  unEl.innerHTML = shown.length===0
+    ? '<div style="text-align:center;padding:20px;color:var(--green);font-weight:700">✓ Alle Fragen beantwortet!</div>'
+    : shown.map(u=>`<div class="unanswered-item">
+        <span class="u-sec" style="border-left:3px solid ${u.color}">${u.sec}</span>
+        <span class="u-q">${u.q}</span>
+      </div>`).join('')
+    + (unanswered.length>50?`<div style="text-align:center;padding:10px;color:var(--muted);font-size:13px">... und ${unanswered.length-50} weitere</div>`:'');
 }
 
 // ── EXPORT ──
