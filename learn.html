@@ -51,6 +51,14 @@ body { font-family: -apple-system, 'Segoe UI', Arial, sans-serif; background: #f
 .toc-num { font-family: 'Arial Black', 'Impact', 'Haettenschweiler', sans-serif; font-size: 12px; color: var(--red); margin-right: 4px; }
 .toc-print { display: block; margin: 12px 16px 0; padding: 6px 10px; background: var(--dark); color: #fff; font-size: 11px; text-align: center; border-radius: 5px; cursor: pointer; border: none; font-family: -apple-system, 'Segoe UI', Arial, sans-serif; font-weight: 600; letter-spacing: 0.5px; }
 .toc-print:hover { background: var(--mid); }
+.toc-search { display:block; margin:10px 12px 8px; position:relative; }
+.toc-search input { width:100%; padding:7px 32px 7px 10px; border:1.5px solid var(--border); border-radius:7px; font-size:12px; font-family:inherit; outline:none; background:var(--surface); color:var(--text); }
+.toc-search input:focus { border-color:var(--red); }
+.toc-search .s-icon { position:absolute; right:9px; top:50%; transform:translateY(-50%); font-size:13px; color:var(--muted); pointer-events:none; }
+.toc-search .s-clear { position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:13px; color:var(--muted); cursor:pointer; display:none; background:none; border:none; padding:0; line-height:1; }
+.toc-item.search-hidden { display:none !important; }
+.toc-item mark { background:#fef08a; color:var(--dark); border-radius:2px; padding:0 1px; }
+#search-no-results { display:none; padding:8px 16px; font-size:12px; color:var(--muted); font-style:italic; }
 
 /* MAIN */
 .main-content { flex: 1; padding: 28px 36px 60px; max-width: 900px; }
@@ -98,7 +106,7 @@ body { font-family: -apple-system, 'Segoe UI', Arial, sans-serif; background: #f
     <span class="chip">👤 Geschäftsführer: Irenej Karasek</span>
     <span class="chip">👤 Stellv. Leitung: Tatjana Bektovic</span>
     <span class="chip">📍 THE GYM Nürnberg · THE GYM Schwabach · Fight Gym Nürnberg</span>
-    <span class="chip">📅 Stand: Mai 2026</span>
+    <span class="chip" style="background:rgba(245,158,11,0.15);border-color:rgba(245,158,11,0.4);color:#f59e0b;font-weight:700">⚡ Power Kids Club</span>
     <span class="chip" onclick="openLernCenter()" style="background:var(--red);color:#fff;border-color:var(--red);cursor:pointer;font-weight:700">🎯 Lern-Center öffnen →</span>
   </div>
 </div>
@@ -108,6 +116,12 @@ body { font-family: -apple-system, 'Segoe UI', Arial, sans-serif; background: #f
 <!-- SIDEBAR -->
 <nav class="toc-sidebar no-print">
   <div class="toc-title">Inhalt</div>
+  <div class="toc-search">
+    <input type="text" id="toc-search-input" placeholder="Suche im Handbuch…" oninput="tocSearch(this.value)" autocomplete="off"/>
+    <span class="s-icon" id="s-icon">🔍</span>
+    <button class="s-clear" id="s-clear" onclick="clearTocSearch()">✕</button>
+  </div>
+  <div id="search-no-results">Keine Treffer</div>
   <span class="toc-item" onclick="document.getElementById('s1').scrollIntoView({behavior:'smooth',block:'start'});document.querySelectorAll('.toc-item').forEach(i=>i.classList.remove('active'));this.classList.add('active')" role="button"><span class="toc-num">01</span> Onboarding & Grundlagen</span>
   <span class="toc-item" onclick="document.getElementById('s2').scrollIntoView({behavior:'smooth',block:'start'});document.querySelectorAll('.toc-item').forEach(i=>i.classList.remove('active'));this.classList.add('active')" role="button"><span class="toc-num">02</span> Arbeitszeiten & Organisation</span>
   <span class="toc-item" onclick="document.getElementById('s3').scrollIntoView({behavior:'smooth',block:'start'});document.querySelectorAll('.toc-item').forEach(i=>i.classList.remove('active'));this.classList.add('active')" role="button"><span class="toc-num">03</span> Tagesbericht & Reporting</span>
@@ -250,7 +264,7 @@ body { font-family: -apple-system, 'Segoe UI', Arial, sans-serif; background: #f
       <div class="qa-q"><span class="qa-q-icon">F7</span> Was tragen Mitarbeiter an der Theke? Gibt es ein Firmen-Shirt?</div>
       <div class="qa-a"><ul>
         <li>Ja, es gibt <strong>Firmen-T-Shirts, Polos und Hoodies</strong> mit THE GYM-Logo — diese sind während der Schicht zu tragen</li>
-        <li>Lange Hose (keine Jogginghose), bequemes Schuhwerk</li>
+        <li>Lange Hose, bequemes Schuhwerk</li>
         <li>Gepflegtes, sauberes Erscheinungsbild ist Pflicht</li>
         <li>Auf den Matten sind Schlappen/Adiletten üblich</li>
       </ul></div>
@@ -322,7 +336,6 @@ body { font-family: -apple-system, 'Segoe UI', Arial, sans-serif; background: #f
       <div class="qa-a"><ul>
         <li>Aktueller <strong>Kassenstand</strong> (gezählt und dokumentiert)</li>
         <li>Offene Aufgaben, die nicht erledigt werden konnten</li>
-        <li>Anzahl von Probetrainings und Freiem Training</li>
         <li>Ob ein Vertrag abgeschlossen wurde</li>
         <li>Besondere Vorkommnisse (Störungen, Beschwerden, technische Probleme)</li>
         <li>Hygieneplan-Status</li>
@@ -422,9 +435,9 @@ body { font-family: -apple-system, 'Segoe UI', Arial, sans-serif; background: #f
           <li>Mitglied fragt nach Kurszeiten oder hat einen kleinen Termin-Konflikt</li>
           <li>Kleine Unordnung an der Theke oder in der Umkleide</li>
           <li>Drehkreuz öffnen, wenn ein Mitglied sein Armband vergessen hat (nach Identitätsprüfung)</li>
-          <li>Drehkreuz funktioniert nicht</li>
-          <li>Kaffeemaschine funktioniert nicht</li>
-          <li>Getränkespender funktioniert nicht</li>
+          <li><strong>Drehkreuz funktioniert nicht:</strong> Mitglied manuell reinlassen (nach Identitätsprüfung), Vorfall dokumentieren und Philipp (015172582585) informieren</li>
+          <li><strong>Kaffeemaschine funktioniert nicht:</strong> Reinigungsprogramm starten oder neu starten. Falls Problem bleibt: Tatijana informieren und Schild aufstellen</li>
+          <li><strong>Getränkespender funktioniert nicht:</strong> Stecker ziehen, 30 Sekunden warten, neu starten. Falls Problem bleibt: Tatijana informieren</li>
         </ul>
         <p><strong>Sofort eskalieren — an Tatijana melden:</strong></p>
         <ul>
@@ -565,7 +578,6 @@ body { font-family: -apple-system, 'Segoe UI', Arial, sans-serif; background: #f
       <div class="qa-a"><ul>
         <li><strong>Einsatzkräfte</strong> (Polizei, Feuerwehr, Rettungsdienst): 25% Rabatt auf All-Inclusive-Tarife</li>
         <li><strong>Bambini-Tarif</strong> (3–5 Jahre): 6-Monats-Laufzeit (kürzer als Standard)</li>
-        <li><strong>Schüler/Studenten</strong>: Sonderkonditionen möglich (Details bei Tatjana erfragen)</li>
         <li><strong>Ehemalige Mitglieder</strong>: Anmeldegebühr kann erlassen werden</li>
       </ul></div>
     </div>
@@ -589,13 +601,13 @@ body { font-family: -apple-system, 'Segoe UI', Arial, sans-serif; background: #f
         <li>Automatische Willkommens-E-Mail mit Vertragsunterlagen (über Magicline)</li>
         <li>E-Mail-Bestätigung der E-Mail-Adresse (muss bestätigt werden)</li>
         <li>Chip/Armband für das Drehkreuz</li>
-        <li><strong>5 Gutscheine</strong> für Freund-Empfehlungen</li>
+        <li><div class="highlight">⚠️ <strong>NICHT VERGESSEN:</strong> 5 Gutscheine für Freund-Empfehlungen aushändigen!</div></li>
       </ul></div>
     </div>
 
     <div class="qa-block">
       <div class="qa-q"><span class="qa-q-icon">F33</span> Wie kündigt ein Mitglied — schriftlich, per App, mündlich? Welche Frist gilt?</div>
-      <div class="qa-a"><p>Kündigung ausschließlich <strong>schriftlich</strong> — per E-Mail oder Brief. Kündigungsfrist: <strong>1 Monat vor Vertragsende</strong>. Außerordentliche Kündigung nur mit wichtigem Grund:</p>
+      <div class="qa-a"><p>Kündigung ausschließlich <strong>schriftlich</strong> — per E-Mail an <strong>t.bektovic@thegym-nuernberg.de</strong> oder per Brief. Kündigungsfrist: <strong>1 Monat vor Vertragsende</strong>. Außerordentliche Kündigung nur mit wichtigem Grund:</p>
       <ul>
         <li><strong>Umzug:</strong> Neuer Wohnort muss mindestens <strong>50 km</strong> vom Studio entfernt sein — Nachweis erforderlich</li>
         <li><strong>Krankheit:</strong> Ärztliches Attest das eine längere Sportuntauglichkeit von <strong>mehr als 6 Monaten</strong> bestätigt</li>
@@ -774,7 +786,7 @@ body { font-family: -apple-system, 'Segoe UI', Arial, sans-serif; background: #f
 
     <div class="qa-block">
       <div class="qa-q"><span class="qa-q-icon">F47</span> Welches Kaffeemaschinen-Modell ist im Einsatz — wie läuft die tägliche Reinigung ab?</div>
-      <div class="qa-a"><p><strong>Jura</strong> (Vollautomatische Kaffeemaschine). Tägliche Reinigung nach Betriebsschluss:</p>
+      <div class="qa-a"><p><strong>Jura W8</strong> (Vollautomatische Kaffeemaschine). Tägliche Reinigung nach Betriebsschluss:</p>
       <ol style="padding-left:18px">
         <li>Tresterbehälter leeren und reinigen</li>
         <li>Auffangschale leeren und reinigen</li>
@@ -782,7 +794,8 @@ body { font-family: -apple-system, 'Segoe UI', Arial, sans-serif; background: #f
         <li>Alle abnehmbaren Teile mit warmem Wasser säubern</li>
         <li>Maschine außen abwischen</li>
         <li>Wasserstand prüfen und Maschine betriebsbereit machen</li>
-      </ol></div>
+      </ol>
+      <p style="margin-top:10px"><a href="https://www.youtube.com/watch?v=Vkisgyvh9NY" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#ff0000;color:#fff;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px">▶ Jura W8 — Reinigungsanleitung auf YouTube</a></p></div>
     </div>
 
     <div class="qa-block">
@@ -1106,7 +1119,7 @@ body { font-family: -apple-system, 'Segoe UI', Arial, sans-serif; background: #f
     <div class="qa-block">
       <div class="qa-q"><span class="qa-q-icon">F75</span> Wer im Team ist als Ersthelfer ausgebildet?</div>
       <div class="qa-a"><ul>
-        <li>Tedi</li><li>Pero</li><li>Tatjana Bektovic</li>
+        <li>Tedi</li><li>Pero</li>
         <li>Jiri</li><li>Hadi</li><li>Eugen</li><li>Daniel</li>
       </ul>
       <p class="note">Alle neuen Mitarbeiter sollten einen Erste-Hilfe-Kurs absolvieren.</p></div>
@@ -1397,9 +1410,81 @@ body { font-family: -apple-system, 'Segoe UI', Arial, sans-serif; background: #f
   <div class="section-header">
     <div class="section-num">18</div>
     <div><div class="section-title">Kommunikation & Social Media</div>
-    <div class="section-hint">Offizielle Kanäle: Instagram, Facebook · Website: thegym-nuernberg.de</div></div>
+    <div class="section-hint">Offizielle Kanäle: Instagram, TikTok, Facebook · Website: thegym-nuernberg.de</div></div>
   </div>
   <div class="section-body">
+
+    <div class="qa-block" style="border-bottom:1px solid var(--border)">
+      <div class="qa-q" style="background:var(--surface2)"><span class="qa-q-icon" style="color:var(--blue)">📱</span> Unsere Social Media Kanäle</div>
+      <div class="qa-a" style="padding:16px">
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+
+          <!-- THE GYM Nürnberg -->
+          <div style="border:1px solid var(--border);border-radius:10px;overflow:hidden">
+            <div style="background:var(--dark);padding:8px 14px;font-size:12px;font-weight:700;color:#fff;letter-spacing:1px">THE GYM NÜRNBERG</div>
+            <div style="padding:10px 14px;display:flex;flex-direction:column;gap:6px">
+              <a href="LINK_FOLGT" style="display:flex;align-items:center;gap:8px;font-size:13px;color:#e1306c;font-weight:600;text-decoration:none">
+                <span style="font-size:16px">📸</span> Instagram <span style="font-size:11px;color:var(--muted);font-weight:400">(Link folgt)</span>
+              </a>
+              <a href="LINK_FOLGT" style="display:flex;align-items:center;gap:8px;font-size:13px;color:#000;font-weight:600;text-decoration:none">
+                <span style="font-size:16px">🎵</span> TikTok <span style="font-size:11px;color:var(--muted);font-weight:400">(Link folgt)</span>
+              </a>
+              <a href="LINK_FOLGT" style="display:flex;align-items:center;gap:8px;font-size:13px;color:#1877f2;font-weight:600;text-decoration:none">
+                <span style="font-size:16px">👥</span> Facebook <span style="font-size:11px;color:var(--muted);font-weight:400">(Link folgt)</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- THE GYM Schwabach -->
+          <div style="border:1px solid var(--border);border-radius:10px;overflow:hidden">
+            <div style="background:var(--dark);padding:8px 14px;font-size:12px;font-weight:700;color:#fff;letter-spacing:1px">THE GYM SCHWABACH</div>
+            <div style="padding:10px 14px;display:flex;flex-direction:column;gap:6px">
+              <a href="LINK_FOLGT" style="display:flex;align-items:center;gap:8px;font-size:13px;color:#e1306c;font-weight:600;text-decoration:none">
+                <span style="font-size:16px">📸</span> Instagram <span style="font-size:11px;color:var(--muted);font-weight:400">(Link folgt)</span>
+              </a>
+              <a href="LINK_FOLGT" style="display:flex;align-items:center;gap:8px;font-size:13px;color:#000;font-weight:600;text-decoration:none">
+                <span style="font-size:16px">🎵</span> TikTok <span style="font-size:11px;color:var(--muted);font-weight:400">(Link folgt)</span>
+              </a>
+              <a href="LINK_FOLGT" style="display:flex;align-items:center;gap:8px;font-size:13px;color:#1877f2;font-weight:600;text-decoration:none">
+                <span style="font-size:16px">👥</span> Facebook <span style="font-size:11px;color:var(--muted);font-weight:400">(Link folgt)</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Power Kids Club -->
+          <div style="border:1px solid rgba(245,158,11,0.3);border-radius:10px;overflow:hidden">
+            <div style="background:#92400e;padding:8px 14px;font-size:12px;font-weight:700;color:#fef3c7;letter-spacing:1px">⚡ POWER KIDS CLUB</div>
+            <div style="padding:10px 14px;display:flex;flex-direction:column;gap:6px">
+              <a href="LINK_FOLGT" style="display:flex;align-items:center;gap:8px;font-size:13px;color:#e1306c;font-weight:600;text-decoration:none">
+                <span style="font-size:16px">📸</span> Instagram <span style="font-size:11px;color:var(--muted);font-weight:400">(Link folgt)</span>
+              </a>
+              <a href="LINK_FOLGT" style="display:flex;align-items:center;gap:8px;font-size:13px;color:#000;font-weight:600;text-decoration:none">
+                <span style="font-size:16px">🎵</span> TikTok <span style="font-size:11px;color:var(--muted);font-weight:400">(Link folgt)</span>
+              </a>
+              <a href="LINK_FOLGT" style="display:flex;align-items:center;gap:8px;font-size:13px;color:#1877f2;font-weight:600;text-decoration:none">
+                <span style="font-size:16px">👥</span> Facebook <span style="font-size:11px;color:var(--muted);font-weight:400">(Link folgt)</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Fight Gym Nürnberg -->
+          <div style="border:1px solid var(--border);border-radius:10px;overflow:hidden">
+            <div style="background:var(--red);padding:8px 14px;font-size:12px;font-weight:700;color:#fff;letter-spacing:1px">FIGHT GYM NÜRNBERG</div>
+            <div style="padding:10px 14px;display:flex;flex-direction:column;gap:6px">
+              <a href="LINK_FOLGT" style="display:flex;align-items:center;gap:8px;font-size:13px;color:#e1306c;font-weight:600;text-decoration:none">
+                <span style="font-size:16px">📸</span> Instagram <span style="font-size:11px;color:var(--muted);font-weight:400">(Link folgt)</span>
+              </a>
+              <a href="LINK_FOLGT" style="display:flex;align-items:center;gap:8px;font-size:13px;color:#1877f2;font-weight:600;text-decoration:none">
+                <span style="font-size:16px">👥</span> Facebook <span style="font-size:11px;color:var(--muted);font-weight:400">(Link folgt)</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+        <p class="note" style="margin-top:12px">Links werden von Tatijana / Alin (Social Media Manager) eingepflegt. Zum Ersetzen: "LINK_FOLGT" in der HTML-Datei durch die echten URLs ersetzen.</p>
+      </div>
+    </div>
 
     <div class="qa-block">
       <div class="qa-q"><span class="qa-q-icon">F98</span> Darf ein Mitarbeiter auf den Studio-Kanälen posten — wenn ja, was und wie?</div>
@@ -1609,6 +1694,51 @@ const observer = new IntersectionObserver((entries) => {
 }, { rootMargin: '-10% 0px -80% 0px', threshold: 0 });
 
 sections.forEach(s => observer.observe(s));
+
+function tocSearch(val) {
+  const q = val.trim().toLowerCase();
+  const items = document.querySelectorAll('.toc-item');
+  const clearBtn = document.getElementById('s-clear');
+  const icon = document.getElementById('s-icon');
+  const noRes = document.getElementById('search-no-results');
+  if(clearBtn) clearBtn.style.display = q ? 'block' : 'none';
+  if(icon) icon.style.display = q ? 'none' : 'block';
+
+  if (!q) {
+    items.forEach(i => i.classList.remove('search-hidden'));
+    if(noRes) noRes.style.display = 'none';
+    document.querySelectorAll('.qa-block').forEach(el => el.style.display = '');
+    document.querySelectorAll('.section-block').forEach(el => el.style.display = '');
+    return;
+  }
+
+  let tocFound = 0;
+  items.forEach(item => {
+    const text = item.textContent.toLowerCase();
+    if (text.includes(q)) { item.classList.remove('search-hidden'); tocFound++; }
+    else { item.classList.add('search-hidden'); }
+  });
+
+  let contentFound = 0;
+  document.querySelectorAll('.qa-block').forEach(block => {
+    if (block.textContent.toLowerCase().includes(q)) { block.style.display = ''; contentFound++; }
+    else { block.style.display = 'none'; }
+  });
+
+  document.querySelectorAll('.section-block').forEach(sec => {
+    const visible = sec.querySelectorAll('.qa-block');
+    let anyVisible = false;
+    visible.forEach(b => { if(b.style.display !== 'none') anyVisible = true; });
+    sec.style.display = anyVisible ? '' : 'none';
+  });
+
+  if(noRes) noRes.style.display = (tocFound === 0 && contentFound === 0) ? 'block' : 'none';
+}
+
+function clearTocSearch() {
+  const inp = document.getElementById('toc-search-input');
+  if(inp) { inp.value = ''; tocSearch(''); inp.focus(); }
+}
 </script>
 
 
@@ -1618,7 +1748,7 @@ sections.forEach(s => observer.observe(s));
 <!-- Overlay Header -->
 <div style="background:var(--dark);padding:14px 24px;border-bottom:3px solid var(--red);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10">
   <div style="font-family:'Arial Black',Impact,sans-serif;font-size:18px;color:#fff;letter-spacing:2px">THE GYM <span style="color:var(--red)">/</span> LERN-CENTER</div>
-  <button onclick="closeLernCenter()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:7px 16px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:700">✕ Schließen</button>
+  <button onclick="closeLernCenter()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:7px 16px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:700">← Zurück zum Handbuch</button>
 </div>
 
 <!-- LOGIN SCREEN -->
@@ -1695,9 +1825,11 @@ sections.forEach(s => observer.observe(s));
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap">
               <button class="lcbtn lcbtn-red" onclick="startQuiz('all')">🎯 Alle Themen</button>
-              <button class="lcbtn lcbtn-ghost" onclick="startQuiz('onboarding')">Onboarding</button>
-              <button class="lcbtn lcbtn-ghost" onclick="startQuiz('rules')">Regeln & Sicherheit</button>
-              <button class="lcbtn lcbtn-ghost" onclick="startQuiz('contracts')">Verträge & Preise</button>
+              <button class="lcbtn lcbtn-ghost" onclick="startQuiz('betrieb')" title="Onboarding · Arbeitszeiten · Tagesbericht · Probetraining · Software & Tools · Elektronik">🏢 Betrieb & Organisation</button>
+              <button class="lcbtn lcbtn-ghost" onclick="startQuiz('mitglieder')" title="Verträge · Preise · Verkauf · Kasse · Mitgliedschaften">💳 Mitglieder & Verträge</button>
+              <button class="lcbtn lcbtn-ghost" onclick="startQuiz('gym')" title="Regeln Theke · Trainingsfläche · Altersgrenzen · Kurse · Reinigung · Einkauf">🏋️ Gym & Training</button>
+              <button class="lcbtn lcbtn-ghost" onclick="startQuiz('sicherheit')" title="Notfälle · Konflikte · Kontakte · DSGVO · Hausverbot">🚨 Sicherheit & Notfälle</button>
+              <button class="lcbtn lcbtn-ghost" onclick="startQuiz('powerkids')" title="Power Kids Club · Social Media · Bambini · Kurse">⚡ Power Kids & Social</button>
             </div>
           </div>
           <div id="quiz-play-screen" style="display:none">
@@ -1893,9 +2025,9 @@ const LC_QUESTIONS = [
   { cat:'Verträge & Preise', q:'Welches System wird für Vertragsabschlüsse genutzt?', opts:['SAP','Salesforce','Magicline','Excel'], correct:2, exp:'Vertragsabschlüsse über Magicline auf dem iPad.' },
   { cat:'Verträge & Preise', q:'Was kostet eine 10er-Karte?', opts:['80 €','100 €','120 €','150 €'], correct:2, exp:'10er-Karte: 120 €.' },
   { cat:'Verträge & Preise', q:'Wie lang ist die Kündigungsfrist?', opts:['2 Wochen','1 Monat vor Vertragsende','3 Monate','6 Monate'], correct:1, exp:'1 Monat vor Vertragsende, schriftlich.' },
-  { cat:'Regeln & Sicherheit', q:'Welche Notrufnummer gilt für Verletzungen?', opts:['110','112','118','120'], correct:1, exp:'Notruf Rettungsdienst: 112.' },
-  { cat:'Regeln & Sicherheit', q:'Was ist auf der Trainingsfläche für Männer verboten?', opts:['Handschuhe','Oben ohne','Wasserflasche','Musik'], correct:1, exp:'Männer dürfen nicht oben ohne trainieren.' },
-  { cat:'Regeln & Sicherheit', q:'Wer darf ein Hausverbot aussprechen?', opts:['Jeder MA','Nur Trainer','Nur Studioleitung/Inhaber','MA ab 2 Jahren'], correct:2, exp:'Nur Studioleitung oder Inhaber.' },
+  { cat:'Notfälle & Sicherheit', q:'Welche Notrufnummer gilt für Verletzungen?', opts:['110','112','118','120'], correct:1, exp:'Notruf Rettungsdienst: 112.' },
+  { cat:'Trainingsfläche', q:'Was ist auf der Trainingsfläche für Männer verboten?', opts:['Handschuhe','Oben ohne','Wasserflasche','Musik'], correct:1, exp:'Männer dürfen nicht oben ohne trainieren.' },
+  { cat:'Konflikte & Beschwerden', q:'Wer darf ein Hausverbot aussprechen?', opts:['Jeder MA','Nur Trainer','Nur Studioleitung/Inhaber','MA ab 2 Jahren'], correct:2, exp:'Nur Studioleitung oder Inhaber.' },
   { cat:'Software & Tools', q:'In welchem Slack-Kanal werden Tagesberichte gepostet?', opts:['#allgemein','#tagesreport','#postbackoffice','#socialmedia'], correct:1, exp:'Tagesberichte im Kanal #tagesreport.' },
   { cat:'Software & Tools', q:'Welches Kaffeemaschinen-Modell ist im Einsatz?', opts:['DeLonghi','Nespresso','Jura','Siemens'], correct:2, exp:'Jura-Kaffeemaschine (Vollautomat).' },
   { cat:'Power Kids Club', q:'Für welche Altersgruppe ist das Bambini Training?', opts:['1-3 Jahre','3-5 Jahre','5-8 Jahre','6-10 Jahre'], correct:1, exp:'Bambini Training ist für 3–5-Jährige.' },
@@ -2106,13 +2238,45 @@ function lcTab(name, el) {
 // ══════════════════════════════════════════════════
 let qQ=[], qIdx=0, qScore=0, qCorrect=0, qTimer=null, qTimeLeft=20, qAnswered=false;
 
-function shuffle(a) { return [...a].sort(()=>Math.random()-0.5); }
+function shuffle(a) {
+  const arr = [...a];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 
 function startQuiz(mode) {
+  const catMap = {
+    betrieb:    ['Onboarding','Arbeitszeiten','Tagesbericht & Reporting','Probetraining','Software & Tools','Elektronik & Technik'],
+    mitglieder: ['Verträge & Preise','Verkauf & Kasse'],
+    gym:        ['Regeln an der Theke','Trainingsfläche','Altersgrenzen & Zulassungen','Kurse & Stundenplan','Reinigung & Hygiene','Einkauf & Nachbestellung'],
+    sicherheit: ['Notfälle & Sicherheit','Konflikte & Beschwerden','Zuständigkeiten & Kontakte','Regeln & Sicherheit'],
+    powerkids:  ['Power Kids Club','Social Media'],
+    onboarding: ['Onboarding'],
+    arbeitszeiten: ['Arbeitszeiten'],
+    tagesbericht: ['Tagesbericht & Reporting'],
+    probetraining: ['Probetraining'],
+    contracts: ['Verträge & Preise'],
+    kasse: ['Verkauf & Kasse'],
+    software: ['Software & Tools'],
+    technik: ['Elektronik & Technik'],
+    theke: ['Regeln an der Theke'],
+    flaeche: ['Trainingsfläche'],
+    alter: ['Altersgrenzen & Zulassungen'],
+    kurse: ['Kurse & Stundenplan'],
+    notfall: ['Notfälle & Sicherheit'],
+    konflikte: ['Konflikte & Beschwerden'],
+    kontakte: ['Zuständigkeiten & Kontakte'],
+    einkauf: ['Einkauf & Nachbestellung'],
+    reinigung: ['Reinigung & Hygiene'],
+    social: ['Social Media'],
+    rules: ['Regeln & Sicherheit','Software & Tools'],
+  };
   let pool = LC_QUESTIONS;
-  if (mode==='onboarding') pool = LC_QUESTIONS.filter(q=>['Onboarding','Arbeitszeiten'].includes(q.cat));
-  if (mode==='rules') pool = LC_QUESTIONS.filter(q=>['Regeln & Sicherheit','Software & Tools'].includes(q.cat));
-  if (mode==='contracts') pool = LC_QUESTIONS.filter(q=>['Verträge & Preise','Power Kids Club'].includes(q.cat));
+  if (mode !== 'all' && catMap[mode]) pool = LC_QUESTIONS.filter(q => catMap[mode].includes(q.cat));
+  if (pool.length === 0) pool = LC_QUESTIONS;
   qQ = shuffle(pool).slice(0,10); qIdx=0; qScore=0; qCorrect=0;
   document.getElementById('quiz-start-screen').style.display='none';
   document.getElementById('quiz-result-screen').style.display='none';
@@ -2193,10 +2357,11 @@ function showQuizStart() { clearInterval(qTimer); document.getElementById('quiz-
 // ══════════════════════════════════════════════════
 // SCENARIO
 // ══════════════════════════════════════════════════
-let scIdx=0, scScore=0, scLives=3, scAnswered=false;
+let scIdx=0, scScore=0, scLives=3, scAnswered=false, scShuffled=[];
 
 function startScenario() {
   scIdx=0; scScore=0; scLives=3; scAnswered=false;
+  scShuffled = shuffle(LC_SCENARIOS);
   document.getElementById('sc-intro-screen').style.display='none';
   document.getElementById('sc-result-screen').style.display='none';
   document.getElementById('sc-play-screen').style.display='block';
@@ -2205,7 +2370,7 @@ function startScenario() {
 
 function showSc() {
   scAnswered=false;
-  const sc=LC_SCENARIOS[scIdx];
+  const sc=scShuffled[scIdx];
   document.getElementById('sc-num').textContent=scIdx+1;
   document.getElementById('sc-cat').textContent=sc.cat;
   document.getElementById('sc-situation').innerHTML=sc.situation;
@@ -2215,16 +2380,17 @@ function showSc() {
   document.getElementById('sc-outcome').style.display='none';
   document.getElementById('sc-next').style.display='none';
   const ch=document.getElementById('sc-choices'); ch.innerHTML='';
-  sc.choices.forEach((c,i)=>{
+  const shuffledChoices = shuffle(sc.choices.map((c,origIdx)=>({...c,origIdx})));
+  shuffledChoices.forEach((c,i)=>{
     const b=document.createElement('button'); b.className='sc-choice';
     b.innerHTML=`<span style="font-weight:800;color:var(--muted);flex-shrink:0">${i+1}.</span><span>${c.text}</span>`;
-    b.onclick=()=>chooseSc(i,b); ch.appendChild(b);
+    b.onclick=()=>chooseSc(i,b,shuffledChoices); ch.appendChild(b);
   });
 }
 
-function chooseSc(idx,btn) {
+function chooseSc(idx,btn,choices) {
   if(scAnswered) return; scAnswered=true;
-  const sc=LC_SCENARIOS[scIdx]; const c=sc.choices[idx];
+  const sc=scShuffled[scIdx]; const c=choices ? choices[idx] : sc.choices[idx];
   document.querySelectorAll('.sc-choice').forEach(b=>b.disabled=true);
   btn.classList.add(c.type);
   if(c.type==='good') scScore+=20; else if(c.type==='neutral') scScore+=10; else { scLives--; document.getElementById('sc-lives-disp').textContent='❤️'.repeat(Math.max(0,scLives))+'🖤'.repeat(3-Math.max(0,scLives)); }
@@ -2238,7 +2404,7 @@ function chooseSc(idx,btn) {
   document.getElementById('sc-next').style.display='block';
 }
 
-function nextScenario() { scIdx++; if(scIdx>=LC_SCENARIOS.length){ showScResult(true); return; } showSc(); }
+function nextScenario() { scIdx++; if(scIdx>=scShuffled.length){ showScResult(true); return; } showSc(); }
 
 function showScResult(completed) {
   document.getElementById('sc-play-screen').style.display='none';
@@ -2269,6 +2435,8 @@ function initDailyChallenge() {
 }
 
 function startDailyChallenge() {
+  // Use current date + time component for extra randomness each play
+  const seed = Date.now();
   dcQ=shuffle(LC_QUESTIONS).slice(0,5); dcIdx=0; dcScore=0; dcAnswered=false;
   document.getElementById('dc-ready').style.display='none';
   document.getElementById('dc-quiz-screen').style.display='block';
